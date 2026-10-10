@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Logix Connect"><meta name="mobile-web-app-capable" content="yes"><meta name="theme-color" content="#1a2433"><link rel="icon" href="icon-192.png?v=89"><link rel="apple-touch-icon" href="icon-192.png?v=89"><style>:root{color-scheme:light}html,body{margin:0;height:100%;overscroll-behavior:none;-webkit-text-size-adjust:100%}[hidden]{display:none!important}</style><script>window.LOGIX_MOBILE=true</script></head><body><title>Logix Connect</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Logix Connect"><meta name="mobile-web-app-capable" content="yes"><meta name="theme-color" content="#1a2433"><link rel="icon" href="icon-192.png?v=91"><link rel="apple-touch-icon" href="icon-192.png?v=90"><style>:root{color-scheme:light}html,body{margin:0;height:100%;overscroll-behavior:none;-webkit-text-size-adjust:100%}[hidden]{display:none!important}</style><script>window.LOGIX_MOBILE=true</script></head><body><title>Logix Connect</title>
 <style>
 /* Layout: a Logix Designer style workspace — title/menu/standard/online toolbars, Controller Organizer at left,
    tabbed documents (routine, tags) with the line simulator docked above, output window and status bar below.
@@ -2487,7 +2487,7 @@ const DT={
     box:d=>({x:-5,y:-34,w:d.params.length*60+10,h:84}),init:()=>({phase:0,v:0}),
     step(d,rt,sim,dt,out){const grav=d.params.style==='gravity roller (no motor)';const dr=grav?null:driveFeedback(sim,d.params.drive);if(grav){rt.drive=null;rt.v=d.params.speed*0.6;rt.running=false}else if(dr){rt.v=d.params.speed*dr.frac;rt.running=dr.active;rt.drive=dr}else{rt.drive=null;const fwd=!!out.Fwd,rev=!!out.Rev;const ref=d.params.vfd?Math.max(0,Math.min(100,out.SpeedRef||0))/100:1;rt.v=fwd&&!rev?d.params.speed*ref:rev&&!fwd?-d.params.speed*ref:0;rt.running=fwd!==rev}rt.phase=(rt.phase+rt.v*dt+2400)%168;convey(d,sim,rt.v);encoderStep(d,rt,dt)},
     inputs(d,rt,sim,ins){ins.Running=!!rt.running;encoderInputs(d,rt,ins)},
-    draw(d,rt,sim,c){const L=d.params.length*60;beltSurface(c,L,rt.phase,d.params.style,{frame:d.params.frame,belt:d.params.beltColor});if(d.params.style!=='gravity roller (no motor)')gearMotor(c,L-12,!!rt.running);
+    draw(d,rt,sim,c){const L=d.params.length*60;if(convElev(d)){ /* raised deck under the belt: checker-plate band with a yellow kick edge and column feet, as in 3D */ c.fillStyle='rgba(75,81,89,.55)';c.fillRect(-12,-58,L+24,116);c.fillStyle='#e3b128';c.fillRect(-12,-58,L+24,2);c.fillRect(-12,56,L+24,2);c.fillStyle='rgba(32,36,40,.75)';for(let x=0;x<=L;x+=150){c.fillRect(x-4,-56,8,8);c.fillRect(x-4,48,8,8)}}beltSurface(c,L,rt.phase,d.params.style,{frame:d.params.frame,belt:d.params.beltColor});if(d.params.style!=='gravity roller (no motor)')gearMotor(c,L-12,!!rt.running);
       c.fillStyle='rgba(255,255,255,.6)';c.beginPath();c.moveTo(L/2-9,-31.5);c.lineTo(L/2+5,-31.5);c.lineTo(L/2+5,-33.5);c.lineTo(L/2+10,-30);c.lineTo(L/2+5,-26.5);c.lineTo(L/2+5,-28.5);c.lineTo(L/2-9,-28.5);c.closePath();c.fill()}},
   motor:{label:'Motor (AC, DC, stepper, servo)',cat:'Actuators',
     params:[S('kind','Motor type','Three-phase AC',MOTOR_KINDS),S('color','Housing color','Grey',Object.keys(MOTORCOL)),S('size','Size','Medium',['Small','Medium','Large']),
@@ -2520,7 +2520,9 @@ const DT={
     draw(d,rt,sim,c){body(c,-42,-56,24,24,4,lg(c,0,-56,0,-32,DARK));
       c.save();c.translate(-30,-36);c.rotate(rt.pos*Math.PI/3.4);body(c,-4,-5,86,10,5,rt.pos>0.5?lg(c,0,-5,0,5,['#f29a45','#c9631a']):lg(c,0,-5,0,5,['#e9edf2','#8c97a6']));c.restore();
       disc(c,-30,-36,7,lg(c,-37,-43,-23,-29,STEEL),true);disc(c,-30,-36,2.5,'#2c343f');led(c,-36,-50,rt.pos>=0.98,'#ffb020',2.6);
-      body(c,-22,-34,9,9,2,lg(c,0,-34,0,-25,DARK));led(c,-17.5,-29.5,!!partOver(sim,d,-14,0),'#ff3b30',2.4)}},
+      body(c,-22,-34,9,9,2,lg(c,0,-34,0,-25,DARK));led(c,-17.5,-29.5,!!partOver(sim,d,-14,0),'#ff3b30',2.4);
+      // latch door at the belt edge (+y side): a hinged plate that swings out with the arm, blue solenoid beside the hinge
+      {const open=rt.pos;c.fillStyle=lg(c,-28,0,28,0,['#8e99a8','#dfe5ec','#8e99a8']);c.fillRect(-28,30,56,3);c.save();c.translate(0,31);c.scale(1,.25+open*.75);body(c,-27,0,54,22,2,lg(c,0,0,0,22,open>.5?['#dfe5ec','#9aa5b1']:['#b7bec6','#8c97a6']));c.restore();body(c,-8,34,16,8,2,lg(c,-8,0,8,0,['#2457c5','#163a8a']))}}},
   gate:{label:'Stop Gate (pneumatic stopper)',cat:'Actuators',over:true,top:true,params:[],blocks:(d,rt)=>rt.pos>0.5,
     signals:()=>[sig('Raise','do','Raise the stopper into the lane'),sig('Up','di','Stopper up'),sig('Down','di','Stopper down')],
     box:d=>({x:-10,y:-58,w:20,h:88}),init:()=>({pos:0}),
@@ -2595,28 +2597,37 @@ const DT={
       rt.spilling=flow>0&&!(rt.pos>=0.95&&bottle&&!bottle.broken)},
     inputs(d,rt,sim,ins){ins.TubeDown=rt.pos>=0.98;ins.LargeCharge=rt.lg>=d.params.largeCharge;ins.SmallCharge=rt.sm>=d.params.smallCharge;if(d.params.feed!=='none'){ins.TankLevel=Math.round(rt.tankPct||0);ins.TankLow=rt.fed?(rt.tankPct||0)<15:false}},
     draw(d,rt,sim,c){const P=d.params;
-      // post and crossbar from the -y side, a manifold with two valves, the tube head over the lane
-      body(c,-8,-94,16,14,2,lg(c,-8,0,8,0,STEEL));c.fillStyle=lg(c,-3,0,3,0,ALU);c.fillRect(-3,-82,6,80);
-      body(c,-38,-78,76,26,4,lg(c,0,-78,0,-52,['#8e99a8','#5f6a78']));c.fillStyle='rgba(255,255,255,.12)';c.fillRect(-34,-75,68,4);
-      if(rt.fed){disc(c,0,-66,11,lg(c,-11,-77,11,-55,['#9aa5b4','#f4f6f9','#8c97a6']),true);c.save();c.beginPath();c.arc(0,-66,9,0,Math.PI*2);c.clip();const lv=(rt.tankPct||0)/100;c.fillStyle=liqCss(rt.product,.85);c.fillRect(-9,-57-18*lv,18,18*lv);c.restore();c.strokeStyle='rgba(0,0,0,.4)';c.beginPath();c.arc(0,-66,9,0,Math.PI*2);c.stroke()}
-      for(const [x,on,lab] of [[-19,rt.lg>0,'L'],[19,rt.sm>0,'S']]){body(c,x-11,-72,22,16,3,lg(c,x-11,0,x+11,0,on?['#4aa3ff','#1d6fd0']:['#e9edf2','#aab4c2']));utext(c,d,lab,x,-64,'bold 9px Tahoma',on?'#fff':'#2c343f');led(c,x,-50,on,'#3ddc5a',2.4)}
-      const r=7+rt.pos*4;c.fillStyle=lg(c,-r,0,r,0,STEEL);c.fillRect(-4,-52,8,52-r);disc(c,0,0,r,rt.pos>=0.95?'#2c343f':'#8c97a6',true);disc(c,0,0,r*0.45,rt.flow?'#4aa3ff':'#111');
+      // as built in 3D: a post at the back with the cross-bar, the head block over the lane edge with the two valve bodies, the head tank standing on the block, a four-lamp indicator strip on its front, the tube head over the lane
+      body(c,-8,-96,16,14,2,lg(c,-8,0,8,0,STEEL));c.fillStyle=lg(c,-3,0,3,0,ALU);c.fillRect(-3,-84,6,82);
+      body(c,-40,-80,80,30,4,lg(c,0,-80,0,-50,['#8e99a8','#5f6a78']));c.fillStyle='rgba(255,255,255,.12)';c.fillRect(-36,-77,72,4);
+      const lv=(rt.tankPct||0)/100;if(rt.fed){disc(c,0,-66,13,lg(c,-13,-79,13,-53,['#9aa5b4','#f4f6f9','#8c97a6']),true);c.save();c.beginPath();c.arc(0,-66,11,0,Math.PI*2);c.clip();c.fillStyle=liqCss(rt.product,.85);c.fillRect(-11,-55-22*lv,22,22*lv);c.restore();c.strokeStyle='rgba(0,0,0,.4)';c.beginPath();c.arc(0,-66,11,0,Math.PI*2);c.stroke();disc(c,0,-66,2.5,'#2c343f')}
+      for(const [x,on,lab] of [[-27,rt.lg>0,'L'],[27,rt.sm>0,'S']]){disc(c,x,-66,8,lg(c,x-8,-74,x+8,-58,on?['#4aa3ff','#1d6fd0']:['#e9edf2','#aab4c2']),true);utext(c,d,lab,x,-63,'bold 8px Tahoma',on?'#fff':'#2c343f')}
+      // indicator strip on the front edge of the block: LARGE, SMALL, TUBE, LOW
+      body(c,-30,-52,60,9,2,lg(c,0,-52,0,-43,['#2c343f','#1a1f24']));for(const [x,on,col] of [[-22,rt.lg>0,'#4aa3ff'],[-7,rt.sm>0,'#3ddc5a'],[8,rt.pos>=0.98,'#ffb020'],[23,!!rt.fed&&(rt.tankPct||0)<15,'#ff3b30']])led(c,x,-47.5,on,col,2.6);
+      const r=7+rt.pos*4;c.fillStyle=lg(c,-r,0,r,0,STEEL);c.fillRect(-4,-43,8,43-r);disc(c,0,0,r,rt.pos>=0.95?'#2c343f':'#8c97a6',true);disc(c,0,0,r*0.45,rt.flow?'#4aa3ff':'#111');
       if(rt.spilling){c.fillStyle='rgba(60,140,235,.45)';c.beginPath();c.ellipse(0,rt.pos>=0.95?16:8,14,7,0,0,Math.PI*2);c.fill()}
       led(c,-30,-88,rt.pos>=0.98,'#ff9f1a',2.6)}},
   capper:{label:'Inline Cap Feeder (pneumatic capper + cap bowl)',cat:'Bottling',over:true,top:true,
     params:[N('stroke','Ram travel time (s)',0.3,0.1,2,0.1),N('capsStart','Caps in the chute at start',30,0,200),N('chuteCap','Chute holds (caps)',40,5,200),N('lowAt','CapLow below (caps)',8,1,100),N('feedRate','Cap feeder rate (caps/s)',3,0.5,20,0.5)],
     signals:()=>[sig('CapRam','do','Drive the capping head down'),sig('Feeder','do','Run the rotary cap magazine (refills the chute)'),sig('LampGreen','do','Green indicator on the column'),sig('LampAmber','do','Amber indicator on the column'),sig('RamDown','di','Head at the bottom of its stroke (LS7)'),sig('CapLow','di','Chute at or below the CapLow count'),sig('CapPresent','di','A cap is waiting at the chuck')],
-    box:d=>({x:-26,y:-96,w:52,h:126}),init:d=>({pos:0,caps:0,chute:+(d.params.capsStart!=null?d.params.capsStart:30),feed:false,g:false,a:false,nocap:0}),
+    box:d=>({x:-34,y:-96,w:78,h:126}),init:d=>({pos:0,caps:0,chute:+(d.params.capsStart!=null?d.params.capsStart:30),feed:false,g:false,a:false,nocap:0}),
     step(d,rt,sim,dt,out){const t=out.CapRam?1:0;const was=rt.pos;rt.pos=ease(rt.pos,t,dt,d.params.stroke);const P=d.params;const cap=+(P.chuteCap!=null?P.chuteCap:40);
       rt.feed=!!out.Feeder;if(rt.feed)rt.chute=Math.min(cap,rt.chute+(+(P.feedRate!=null?P.feedRate:3))*dt);rt.g=!!out.LampGreen;rt.a=!!out.LampAmber;
       if(was<0.95&&rt.pos>=0.95){const b=partOver(sim,d,0,0,16);if(b&&b.kind==='bottle'){if(b.broken){if(!b.crushed){b.crushed=true;rt.crushed=(rt.crushed||0)+1;sim.log(d.name+' came down on a broken bottle and crushed it',0)}}else if(!b.capped){if(rt.chute>=1){rt.chute-=1;b.capped=true;rt.caps++}else{rt.nocap++;sim.log(d.name+' cycled with no cap in the chute: bottle left open',0)}}}else sim.log(d.name+' cycled with no bottle under it',0)}},
     inputs(d,rt,sim,ins){ins.RamDown=rt.pos>=0.98;ins.CapLow=rt.chute<=+(d.params.lowAt!=null?d.params.lowAt:8);ins.CapPresent=rt.chute>=1},
-    draw(d,rt,sim,c){body(c,-8,-94,16,14,2,lg(c,-8,0,8,0,STEEL));c.fillStyle=lg(c,-3,0,3,0,ALU);c.fillRect(-3,-82,6,80);
-      body(c,-24,-78,48,24,4,lg(c,0,-78,0,-54,['#8e99a8','#5f6a78']));utext(c,d,'CAP',0,-66,'bold 9px Tahoma','#f4f6f9');
-      // cap magazine on the side
-      for(let i=0;i<4;i++)disc(c,20,-46+i*7,4.5,lg(c,16,-50,24,-42,['#f0c860','#a87818']));
-      const sz=9+rt.pos*5;c.fillStyle=lg(c,-5,0,5,0,STEEL);c.fillRect(-5,-54,10,54-sz);body(c,-sz,-sz,sz*2,sz*2,3,lg(c,-sz,-sz,sz,sz,rt.pos>=0.95?['#4a5462','#1d2227']:['#e9edf2','#8c97a6']));if(rt.pos>=0.95)disc(c,0,0,5,'#f0c860');
-      led(c,-30,-88,rt.pos>=0.98,'#ff9f1a',2.6)}},
+    draw(d,rt,sim,c){const cap=+(d.params.chuteCap!=null?d.params.chuteCap:40);const nCh=Math.min(8,Math.ceil((rt.chute||0)/cap*8));
+      // as built in 3D: stainless base plate at the back, slotted column, cross-arm out over the lane, air cylinder with the chuck under it, the rotary cap magazine on its pedestal beside the column and the chute of caps down to the chuck
+      body(c,-30,-92,70,34,3,lg(c,-30,-92,40,-58,['#c9d2dc','#f4f6f9','#aab4c2']));for(const [x,y] of [[-26,-88],[36,-88],[-26,-62],[36,-62]])disc(c,x,y,1.5,'#2c343f');
+      body(c,-6,-80,12,12,2,lg(c,-6,0,6,0,['#8c97a6','#dfe5ec','#8c97a6']));c.fillStyle='#2c343f';c.fillRect(-1,-79,2,10);
+      c.fillStyle=lg(c,-4,0,4,0,ALU);c.fillRect(-4,-70,8,62);disc(c,0,-24,13,lg(c,-13,-37,13,-11,['#e9edf2','#9aa5b4','#5f6a78']),true);c.strokeStyle='#1a1f24';c.lineWidth=2;c.beginPath();c.arc(0,-24,13,0,Math.PI*2);c.stroke();c.lineWidth=1;
+      // the rotary magazine: twelve pockets, caps to the chute level, turned one pocket per cap pressed
+      const mx=24,my=-40;c.save();c.translate(mx,my);c.rotate(-((rt.caps||0)+(rt.nocap||0))*Math.PI/6);disc(c,0,0,15,lg(c,-15,-15,15,15,['#e9edf2','#aab4c2','#8c97a6']),true);const mcap=Math.min(12,Math.ceil((rt.chute||0)/cap*12));for(let i=0;i<12;i++){const a=i*Math.PI/6;const px=Math.cos(a)*11,py=Math.sin(a)*11;disc(c,px,py,2.6,'#1d2227');if(i<mcap)disc(c,px,py,2,'#f0c860')}disc(c,0,0,3,lg(c,-3,-3,3,3,STEEL));c.restore();
+      c.strokeStyle='rgba(0,0,0,.45)';c.lineWidth=1;c.beginPath();c.arc(mx,my,15,0,Math.PI*2);c.stroke();
+      // chute from the magazine rim to the chuck, caps queued along it
+      c.strokeStyle=lg(c,0,0,24,0,['#9aa5b1','#5f6a78']);c.lineWidth=6;c.beginPath();c.moveTo(mx-8,my+12);c.lineTo(6,-12);c.stroke();c.lineWidth=1;for(let i=0;i<nCh;i++){const t=i/8;disc(c,(mx-8)*(1-t)+6*t,(my+12)*(1-t)-12*t,2.2,'#f0c860')}
+      // chuck under the cylinder, bigger as it comes down; the next cap sits in it; indicator lamps on the column
+      const sz=8+rt.pos*5;body(c,-sz,-sz,sz*2,sz*2,3,lg(c,-sz,-sz,sz,sz,rt.pos>=0.95?['#2c343f','#111']:['#4a5462','#1d2227']));if((rt.chute||0)>=1)disc(c,0,0,4,'#f0c860');
+      led(c,-14,-84,!!rt.g,'#28c840',2.6);led(c,-14,-74,!!rt.a,'#ffb020',2.6);led(c,8,-84,rt.pos>=0.98,'#ff9f1a',2.2);utext(c,d,String(rt.caps||0),20,-80,'bold 9px Consolas','#2c343f')}},
   grinder:{label:'Grinder (shredder under a raised belt, over a box conveyor)',cat:'Bottling',over:true,
     params:[N('perBox','Bottles per box',4,1,30),N('speed','Grind time per bottle (s)',0.6,0.1,3,0.1)],
     signals:()=>[sig('Grinder','do','Run the grinder'),sig('Detect','di','A bottle is waiting in the hopper'),sig('BoxFull','di','The box under the chute holds its share'),sig('BoxLevel','ai','Level sensor on the chute: bottles ground into the box under it (0 with no box)')],
@@ -2680,9 +2691,11 @@ const DT={
       for(const [vy,on] of [[y-12,rt.in],[y+h+10,rt.out]]){c.fillStyle=on?'#2e9e4f':'#77828f';c.beginPath();c.moveTo(-11,vy-6);c.lineTo(11,vy+6);c.lineTo(11,vy-6);c.lineTo(-11,vy+6);c.closePath();c.fill();c.strokeStyle='rgba(0,0,0,.45)';c.stroke()}
       body(c,x,y,w,h,12,lg(c,x,0,x+w,0,['#9aa5b4','#f4f6f9','#cfd6df','#8c97a6']));
       c.save();rr(c,x+3,y+3,w-6,h-6,10);c.clip();const lh=(h-6)*(rt.level||0)/100;c.fillStyle=`rgb(${col[0]},${col[1]},${col[2]})`;c.globalAlpha=.85;c.fillRect(x+3,y+h-3-lh,w-6,lh);c.globalAlpha=1;c.fillStyle='rgba(255,255,255,.35)';c.fillRect(x+3,y+h-3-lh,w-6,2);c.restore();
-      for(const pct of [d.params.high,d.params.low]){const fy=y+h-3-(h-6)*pct/100;c.fillStyle='#2c343f';c.fillRect(x+w-2,fy-2,9,4);led(c,x+w+10,fy,pct===d.params.high?(rt.level||0)>=pct:(rt.level||0)<=pct,'#ffb020',2.6)}
+      // level probes as in 3D: head fittings on the lid, rods down to the level they watch, a brass tip, the lamp on the head; dry lamp on the junction box
+      for(const [px,pct,hi] of [[x+w-22,d.params.high,true],[x+22,d.params.low,false]]){const fy=y+h-3-(h-6)*pct/100;c.fillStyle='rgba(60,70,80,.55)';c.fillRect(px-1,y+6,2,fy-y-6);c.fillStyle='#d8a82a';c.fillRect(px-2,fy-3,4,4);body(c,px-5,y+2,10,9,2,lg(c,0,y+2,0,y+11,['#4a5462','#2c343f']));led(c,px,y-4,hi?(rt.level||0)>=pct:(rt.level||0)<=pct,'#ffb020',2.6)}
+      body(c,-14,y-9,28,8,2,lg(c,0,y-9,0,y-1,['#4a5462','#2c343f']));
       body(c,-30,y+h/2-20,60,18,9,'rgba(255,255,255,.9)');utext(c,d,Math.round(rt.level||0)+' %',0,y+h/2-11,'bold 12px Consolas','#10203f');utext(c,d,d.params.product.toUpperCase(),0,y+h/2+8,'bold 9px Tahoma','#2c343f');
-      if(rt.flow>0){utext(c,d,'▼ '+Math.round(rt.flow)+'/s',0,y+h/2+22,'bold 9px Consolas','#1d6fd0')}led(c,-40,y-16,!!rt.dry,'#ff3b30',2.6)}},
+      if(rt.flow>0){utext(c,d,'▼ '+Math.round(rt.flow)+'/s',0,y+h/2+22,'bold 9px Consolas','#1d6fd0')}led(c,-8,y-5,!!rt.dry,'#ff3b30',2.4)}},
   thumbwheel:{label:'Thumbwheel Switch (digits + Enter)',cat:'Bottling',
     params:[N('digits','Digits',4,1,6),B('enter','Enter button',true),X('text','Label','PRESET')],
     signals:p=>[sig('Value','ai','The digits read as one number'),...(p.enter!==false?[sig('Enter','di','Enter button (momentary)')]:[])],
@@ -3152,6 +3165,8 @@ DT.belt.sbox=d=>({x:-5,y:-14,w:d.params.length*60+10,h:52});
 DT.belt.side=function(d,rt,sim,c,flip){const L=d.params.length*60;const st=d.params.style;const F=CONV_FRAME[d.params.frame]||CONV_FRAME.Aluminium;const B=CONV_BELT[d.params.beltColor]||CONV_BELT.Black;const roller=/roller/.test(st);
   // legs with feet
   const legs=[14,L-14];for(let x=14+180;x<L-100;x+=180)legs.push(x);c.fillStyle=lg(c,0,10,0,36,['#8c97a6','#5f6a78']);for(const x of legs){c.fillRect(x-3,10,6,24);c.fillRect(x-8,33,16,3)}
+  if(convElev(d)){ // raised deck: a mezzanine plate under the legs on columns, with a handrail along the back
+    c.fillStyle=lg(c,0,36,0,42,['#5f6a78','#3b434d']);c.fillRect(-12,36,L+24,6);c.fillStyle='#e3b128';c.fillRect(-12,36,L+24,1.5);c.fillStyle=lg(c,0,42,0,70,['#3b434d','#1d2227']);for(let x=-6;x<=L+6;x+=150){c.fillRect(x-4,42,8,28);c.fillRect(x-9,69,18,3)}c.strokeStyle='rgba(44,52,63,.8)';c.lineWidth=1.5;for(let x=0;x<=L;x+=120){c.beginPath();c.moveTo(x,36);c.lineTo(x,8);c.stroke()}c.beginPath();c.moveTo(0,8);c.lineTo(L,8);c.moveTo(0,20);c.lineTo(L,20);c.stroke();c.lineWidth=1}
   // frame rail
   body(c,0,2,L,10,2,lg(c,0,2,0,12,[F[1],F[0]]));c.fillStyle='rgba(0,0,0,.18)';c.fillRect(0,8,L,1.2);
   if(roller){for(let x=6;x<L;x+=12){disc(c,x,-2,5,lg(c,x-5,-7,x+5,3,['#f4f6f9','#aab4c2','#77828f']));const a=(rt.phase/5+x*0.3)*(flip?-1:1);c.strokeStyle='rgba(0,0,0,.35)';c.beginPath();c.moveTo(x+Math.cos(a)*3.5,-2+Math.sin(a)*3.5);c.lineTo(x-Math.cos(a)*3.5,-2-Math.sin(a)*3.5);c.stroke()}}
@@ -3187,7 +3202,7 @@ DT.pivot.sbox=d=>({x:-44,y:-70,w:98,h:74});DT.pivot.side=function(d,rt,sim,c){si
   c.save();c.translate(-30,-58);c.rotate(rt.pos*Math.PI/2.6);body(c,-3,-3,70,7,3,rt.pos>0.5?lg(c,0,-3,0,4,['#f29a45','#c9631a']):lg(c,0,-3,0,4,['#e9edf2','#8c97a6']));c.restore();
   const det=!!partOver(sim,d,-14,0);led(c,-14,-66,det,'#ff3b30',2.4);led(c,-40,-72,rt.pos>=0.98,'#ff9f1a',2.2)};
 DT.pusher.sbox=d=>({x:-24,y:-70,w:48,h:74});DT.pusher.side=function(d,rt,sim,c){sidePost(c,-14,-62);sidePost(c,14,-62);body(c,-22,-72,44,14,3,lg(c,0,-72,0,-58,DARK));const ext=rt.pos*34;c.fillStyle=lg(c,-3,0,3,0,STEEL);c.fillRect(-3,-58,6,ext+6);body(c,-16,-58+ext,32,8,2,rt.pos>0.5?lg(c,0,0,0,8,['#f29a45','#c9631a']):lg(c,0,0,0,8,['#e9edf2','#8c97a6']));led(c,-18,-74,!!partOver(sim,d,-14,0),'#ff3b30',2.2)};
-DT.filler.sbox=d=>({x:-44,y:-106,w:88,h:110});
+DT.filler.sbox=d=>({x:-44,y:-132,w:88,h:136});
 DT.level.sbox=SIDE_SENSOR_BOX;DT.level.side=function(d,rt,sim,c){const p=partOver(sim,d,0,0);const on=!!p&&DT.level.liquid(p)>=d.params.height;const yb=SIDE_BS-d.params.height;const cap=/^Capacitive/.test(d.params.type||'');sidePost(c,-16,yb-10);sideHead(c,-16,yb,12,14,on,cap?['#6fa0f0','#2b63c4','#1d4682']:undefined,'#3ddc5a');
   c.save();c.strokeStyle=on?'rgba(61,220,90,.9)':'rgba(61,220,90,.3)';c.lineWidth=on?2:1;c.setLineDash([3,3]);c.beginPath();c.moveTo(-10,yb);c.lineTo(14,yb);c.stroke();c.restore()};
 DT.dispenser.sbox=d=>({x:-40,y:-130,w:80,h:134});DT.dispenser.side=function(d,rt,sim,c){const lv=(rt.level||0)/100;c.fillStyle=lg(c,-3,0,3,0,ALU);c.fillRect(-30,-120,6,10);c.fillRect(24,-120,6,10);body(c,-36,-118,72,46,8,lg(c,-36,0,36,0,['#9aa5b4','#f4f6f9','#cfd6df','#8c97a6']));c.save();rr(c,-33,-115,66,40,6);c.clip();c.fillStyle=liqCss(rt.product,.85);c.fillRect(-33,-75-40*lv,66,40*lv);c.restore();utext(c,d,Math.round(rt.level||0)+' %',0,-95,'bold 10px Consolas','#10203f');
@@ -3195,17 +3210,28 @@ DT.dispenser.sbox=d=>({x:-40,y:-130,w:80,h:134});DT.dispenser.side=function(d,rt
   if(rt.flow){const p=partOver(sim,d,0,0,16);const to=p&&p.kind==='bottle'&&!p.broken?SIDE_BS-partH(p)*0.9:SIDE_BS;c.fillStyle='rgba(60,140,235,.55)';c.fillRect(-2,-32,4,to+32);if(rt.spilling){c.beginPath();c.ellipse(0,SIDE_BS-1,16,3,0,0,Math.PI*2);c.fill()}}
   led(c,-30,-124,rt.level<(+d.params.empty||0),'#ff3b30',2.6)};
 DT.filler.side=function(d,rt,sim,c){sideGantry(c,-78,72);
-  for(const [x,on,lab] of [[-19,rt.lg>0,'L'],[19,rt.sm>0,'S']]){body(c,x-11,-94,22,16,3,lg(c,x-11,0,x+11,0,on?['#4aa3ff','#1d6fd0']:['#e9edf2','#aab4c2']));utext(c,d,lab,x,-86,'bold 9px Tahoma',on?'#fff':'#2c343f');led(c,x,-100,on,'#3ddc5a',2.4)}
+  // head tank standing on the block (as in 3D), liquid at the head-tank level, inlet stub on top
+  if(rt.fed){const lv=(rt.tankPct||0)/100;body(c,-13,-122,26,28,3,lg(c,-13,0,13,0,['#c9d2dc','#f4f6f9','#aab4c2']));c.save();rr(c,-11,-120,22,24,2);c.clip();c.fillStyle=liqCss(rt.product,.85);c.fillRect(-11,-96-24*lv,22,24*lv);c.restore();c.strokeStyle='rgba(0,0,0,.35)';c.strokeRect(-13,-122,26,28);c.fillStyle='#5f6a78';c.fillRect(-3,-128,6,6)}
+  for(const [x,on,lab] of [[-24,rt.lg>0,'L'],[24,rt.sm>0,'S']]){body(c,x-10,-94,20,16,3,lg(c,x-10,0,x+10,0,on?['#4aa3ff','#1d6fd0']:['#e9edf2','#aab4c2']));utext(c,d,lab,x,-86,'bold 9px Tahoma',on?'#fff':'#2c343f')}
+  // the indicator strip on the face of the head block: LARGE SMALL TUBE LOW
+  body(c,-30,-76,60,9,2,lg(c,0,-76,0,-67,['#2c343f','#1a1f24']));for(const [x,on,col] of [[-22,rt.lg>0,'#4aa3ff'],[-7,rt.sm>0,'#3ddc5a'],[8,rt.pos>=0.98,'#ffb020'],[23,!!rt.fed&&(rt.tankPct||0)<15,'#ff3b30']])led(c,x,-71.5,on,col,2.6);
   // the tube: a pipe from the manifold, lowering into the bottle neck
-  const tip=-62+rt.pos*30;c.fillStyle=lg(c,-4,0,4,0,STEEL);c.fillRect(-4,-78,8,tip+78);c.fillStyle='#2c343f';c.fillRect(-5,tip-3,10,4);
+  const tip=-62+rt.pos*30;c.fillStyle=lg(c,-4,0,4,0,STEEL);c.fillRect(-4,-67,8,tip+67);c.fillStyle='#2c343f';c.fillRect(-5,tip-3,10,4);
   if(rt.flow){const b=partOver(sim,d,0,0,16);const lvl=b&&b.kind==='bottle'&&b.vol?SIDE_BS-partH(b)*0.68*Math.min(1,b.fill/b.vol):SIDE_BS;c.fillStyle='rgba(60,140,235,.75)';c.fillRect(-2,tip,4,Math.max(0,lvl-tip))}
-  if(rt.spilling){c.fillStyle='rgba(60,140,235,.5)';c.beginPath();c.ellipse(0,SIDE_BS+1,16,3,0,0,Math.PI*2);c.fill()}
-  led(c,-30,-104,rt.pos>=0.98,'#ff9f1a',2.6)};
-DT.capper.sbox=d=>({x:-30,y:-106,w:60,h:110});
-DT.capper.side=function(d,rt,sim,c){sideGantry(c,-78,44);utext(c,d,'CAP',0,-86,'bold 9px Tahoma','#f4f6f9');
-  for(let i=0;i<4;i++){c.fillStyle=lg(c,20,0,32,0,['#f0c860','#a87818','#f0c860']);rr(c,20,-74+i*5,12,4,1);c.fill()}
-  const y=-70+rt.pos*22;c.fillStyle=lg(c,-5,0,5,0,STEEL);c.fillRect(-5,-78,10,y+78);body(c,-12,y,24,8,2,lg(c,0,y,0,y+8,rt.pos>=0.95?['#4a5462','#1d2227']:['#e9edf2','#8c97a6']));c.fillStyle='#f0c860';c.fillRect(-4,y+8,8,3);
-  led(c,-30,-104,rt.pos>=0.98,'#ff9f1a',2.6)};
+  if(rt.spilling){c.fillStyle='rgba(60,140,235,.5)';c.beginPath();c.ellipse(0,SIDE_BS+1,16,3,0,0,Math.PI*2);c.fill()}};
+DT.capper.sbox=d=>({x:-46,y:-120,w:102,h:124});
+DT.capper.side=function(d,rt,sim,c){const cap=+(d.params.chuteCap!=null?d.params.chuteCap:40);
+  // column on its base plate behind the lane, cross-arm, the air cylinder standing on the arm, the chuck on the rod coming down to the bottle
+  c.fillStyle=lg(c,-30,0,-18,0,['#c9d2dc','#f4f6f9','#aab4c2']);c.fillRect(-44,SIDE_BS-2,52,4);c.fillStyle=lg(c,-26,0,-18,0,['#8c97a6','#dfe5ec','#8c97a6']);c.fillRect(-26,-108,8,SIDE_BS+108);c.fillStyle='#2c343f';c.fillRect(-23,-104,2,SIDE_BS+100);
+  body(c,-26,-80,32,8,2,lg(c,0,-80,0,-72,['#dfe5ec','#8c97a6']));body(c,-8,-110,16,30,3,lg(c,-8,0,8,0,['#8c97a6','#f4f6f9','#8c97a6']));c.fillStyle='#1a1f24';c.fillRect(-9,-110,18,4);c.fillRect(-9,-84,18,4);c.fillStyle='#2457c5';c.fillRect(-3,-116,2,6);c.fillRect(3,-116,2,6);
+  const y=-70+rt.pos*22;c.fillStyle=lg(c,-3,0,3,0,STEEL);c.fillRect(-3,-72,6,y+72);body(c,-9,y,18,10,2,lg(c,0,y,0,y+10,['#2c343f','#111']));if((rt.chute||0)>=1){c.fillStyle='#f0c860';c.fillRect(-4,y+10,8,3)}
+  // ram-down reed switch on the barrel, the two column lamps
+  c.fillStyle='#1a1f24';c.fillRect(8,-90,4,6);led(c,13,-87,rt.pos>=0.98,'#ff9f1a',2);led(c,-32,-96,!!rt.g,'#28c840',2.6);led(c,-32,-88,!!rt.a,'#ffb020',2.6);
+  // the rotary magazine on its pedestal beside the column, caps on the drum, the chute down to the chuck
+  const mcap=Math.min(12,Math.ceil((rt.chute||0)/cap*12));c.fillStyle='#2c343f';c.fillRect(32,-50,10,SIDE_BS+50);body(c,20,-62,34,14,3,lg(c,20,0,54,0,['#8c97a6','#f4f6f9','#8c97a6']));c.fillStyle='#1d2227';c.beginPath();c.ellipse(37,-62,17,4,0,0,Math.PI*2);c.fill();
+  for(let i=0;i<mcap;i++){const a=i/12*Math.PI*2;disc(c,37+Math.cos(a)*12,-62+Math.sin(a)*2.6,2,'#f0c860')}
+  c.strokeStyle=lg(c,0,0,30,0,['#9aa5b1','#5f6a78']);c.lineWidth=5;c.beginPath();c.moveTo(24,-66);c.lineTo(4,-78);c.stroke();c.lineWidth=1;const nCh=Math.min(8,Math.ceil((rt.chute||0)/cap*8));for(let i=0;i<nCh;i++){const t=i/8;disc(c,24*(1-t)+4*t,-66*(1-t)-78*t,2,'#f0c860')}
+  utext(c,d,String(rt.caps||0),-32,-108,'bold 9px Consolas','#2c343f')};
 DT.grinder.sbox=d=>({x:-40,y:-48,w:80,h:126});
 DT.grinder.side=function(d,rt,sim,c){// hopper, open at the top, teeth inside, chute down to the band below
   c.fillStyle=lg(c,-38,0,38,0,['#6b7684','#3b434d','#6b7684']);c.beginPath();c.moveTo(-38,-44);c.lineTo(38,-44);c.lineTo(22,14);c.lineTo(-22,14);c.closePath();c.fill();c.strokeStyle='rgba(0,0,0,.45)';c.stroke();
@@ -3602,7 +3628,7 @@ const V3B3={
     // cap feeder: a rotary magazine on a pedestal at the back, a revolver drum with twelve cap pockets that indexes one pocket per cap and spins while the feeder runs; a chute carries the caps down to the chuck
     const bx=.75,bz=zp-.2;g.add(v3Cyl(.2,.9,blk,bx,.5,bz,16));g.add(v3Cyl(.26,.06,blk,bx,.98,bz,16));g.add(v3Cyl(.08,.22,V3MAT.get('motorGrey',()=>v3Mat(0x9aa3ad,{roughness:.45,metalness:.5})),bx+.28,.86,bz,12).rotateZ(Math.PI/2));
     const mag=new THREE.Group();mag.position.set(bx,1.02,bz);g.add(mag);mag.add(v3Cyl(.32,.26,ss,0,.13,0,36));mag.add(v3Cyl(.07,.3,blk,0,.16,0,16));mag.add(v3Cyl(.02,.4,chrome,0,.2,0,10));
-    const magCaps=[];for(let i=0;i<12;i++){const a=i/12*Math.PI*2;const px=Math.cos(a)*.24,pz=Math.sin(a)*.24;mag.add(v3Cyl(.055,.27,V3MAT.get('pocket',()=>v3Mat(0x14171b,{roughness:.8})),px,.135,pz,14));const c=v3Cyl(.045,.03,v3Mat(0xd8a82a,{metalness:.6,roughness:.4}),px,.25,pz,12);mag.add(c);magCaps.push(c)}
+    const magCaps=[];for(let i=0;i<12;i++){const a=i/12*Math.PI*2;const px=Math.cos(a)*.24,pz=Math.sin(a)*.24;mag.add(v3Cyl(.055,.014,V3MAT.get('pocket',()=>v3Mat(0x14171b,{roughness:.8})),px,.262,pz,14));const c=v3Cyl(.045,.03,v3Mat(0xd8a82a,{metalness:.6,roughness:.4}),px,.284,pz,12);c.add(v3Cyl(.046,.004,v3Mat(0xb8891a,{metalness:.6,roughness:.5}),0,.017,0,12));mag.add(c);magCaps.push(c)}
     g.userData.mag=mag;g.userData.magCaps=magCaps;g.userData.magAng=0;for(let i=0;i<4;i++){const a=i/4*Math.PI*2;g.add(v3Box(.03,.3,.03,blk,bx+Math.cos(a)*.34,1.17,bz+Math.sin(a)*.34))}g.add(new THREE.Mesh(new THREE.TorusGeometry(.34,.012,6,36),ss)).position.set(bx,1.32,bz);g.children[g.children.length-1].rotation.x=Math.PI/2;
     const chute=new THREE.Group();chute.position.set(.14,1.5,zp-.05);chute.lookAt(bx,1.3,bz);g.add(chute);const cl=Math.hypot(bx-.14,bz-zp+.05,.2);const cm=V3MAT.get('chuteAlu',()=>v3Mat(0x9aa5b1,{roughness:.4,metalness:.4}));chute.add(v3Box(.14,.02,cl,cm,0,-.02,cl/2));for(const dx of [-.075,.075])chute.add(v3Box(.015,.08,cl,cm,dx,.02,cl/2));
     const caps=[];for(let i=0;i<8;i++){const cap=v3Cyl(.045,.025,v3Mat(0xd8a82a,{metalness:.6,roughness:.4}),0,.012,.08+i*(cl-.16)/7,12);chute.add(cap);caps.push(cap)}g.userData.chuteCaps=caps;
@@ -5007,9 +5033,11 @@ END_CASE;</pre>
   if(spQuery)spSearch(spQuery);
 }
 /* ---------- Start Page: glossary and search ---------- */
-const APP_VERSION=88;/* indicator light styles added in the same version */
+const APP_VERSION=89;/* indicator light styles added in the same version */
 /* every release adds an entry at the top: {v, t: title, i: [what changed]} */
-const UPDATES=[{"v": "88", "t": "The Bottle Line ships complete: reservoir, pipework and a nine-step program", "i": ["The line is laid out like LogixPro\u2019s now. Main_Conv runs on a raised deck (a new conveyor Height setting, +1.7 m, with columns, a checker-plate mezzanine and a handrail) above the box and divert conveyors and longer than both. The scrap gate swings a broken bottle off the edge and it drops into the shredder hopper below: hopper on top, the twin cutters under it, a chute straight down into the box, the gear motor on the side. The divert gate swings a small bottle off the other side and it rides a cleated catch incline down onto the divert conveyor; large bottles carry on. The incline appears by itself wherever a raised conveyor runs alongside a floor-level one, so the same thing can be built in the sandbox from the parts list: Raised Conveyor, Divert Conveyor, Box Conveyor, Box Feeder, Box Photoeye, Broken-bottle Eye and Bottle Feeder are listed as parts of their own (presets of the base types) and the list grows with every release. The scene also grows headroom above the floor so a tall device near the top edge (the tank, its stack light, side-view machines) is never cut off and the view scrolls up to it; in the side view the stack light stands on the tank. ",
+const UPDATES=[{"v": "89", "t": "Palette presets place again", "i": ["Clicking Raised Conveyor, Divert Conveyor, Box Conveyor, Box Feeder, Box Photoeye, Broken-bottle Eye or Bottle Feeder in the palette armed the part but the ghost that follows the cursor looked the preset up as a plain part type and threw, so the scene stopped drawing and the click on the floor never placed it. The ghost (and the phone's Tap-the-scene bar) now resolve a preset to its base part with the preset's settings, so every preset places with one click like the plain parts", "The Programmer's Guide (LogixConnect-Programmers-Guide.pdf) ships with this build: a printable textbook with screenshots of every rung, the workbench, the parts and the machines, and a walkthrough from an empty sandbox to the running bottle line"]},
+{"v": "88", "t": "The Bottle Line ships complete: reservoir, pipework and a nine-step program", "i": ["The line is laid out like LogixPro\u2019s now. Main_Conv runs on a raised deck (a new conveyor Height setting, +1.7 m, with columns, a checker-plate mezzanine and a handrail) above the box and divert conveyors and longer than both. The scrap gate swings a broken bottle off the edge and it drops into the shredder hopper below: hopper on top, the twin cutters under it, a chute straight down into the box, the gear motor on the side. The divert gate swings a small bottle off the other side and it rides a cleated catch incline down onto the divert conveyor; large bottles carry on. The incline appears by itself wherever a raised conveyor runs alongside a floor-level one, so the same thing can be built in the sandbox from the parts list: Raised Conveyor, Divert Conveyor, Box Conveyor, Box Feeder, Box Photoeye, Broken-bottle Eye and Bottle Feeder are listed as parts of their own (presets of the base types) and the list grows with every release. The scene also grows headroom above the floor so a tall device near the top edge (the tank, its stack light, side-view machines) is never cut off and the view scrolls up to it; in the side view the stack light stands on the tank. ",
+ "The Top-down and Side views draw what the 3D view builds: the fill station with its head block, L / S valve bodies, the head tank standing on the block with the product level and the four-lamp strip; the Inline Cap Feeder with its base plate, slotted column, cross-arm, air cylinder, chuck carrying the next cap, the rotary magazine on its pedestal turning one pocket per cap and the chute of caps; the reservoir with its level probes through the lid and the junction box; the gates with their latch doors; a raised conveyor on its checker-plate deck with the yellow kick edge and columns (and a handrail in the side view)",
  "On the phone, the Scene sheet (the Scene button under the simulator) now carries the controls the small screen has no toolbar room for: View (Top-down / Side), Floor size, Name tags, Background, Clear Parts and Reset Sim. The 3D view stays a desktop view so the phone never bogs down: every part, program and inventory upgrade is on the phone, drawn in the 2D views",
  "Rename a device and its alias tags follow, including the short names the template uses: rename Syrup_Tank to Milk and Syrup_Inlet, Syrup_Level, Syrup_High, Syrup_Low and Syrup_Flow become Milk_Inlet, Milk_Level… with every rung rewritten (Milk to Milk_Tank keeps them as they are). Open Controller Tags after a rename and the alias says what the device says",
  "Capping a broken bottle crushes it: the chuck flattens the body, knocks the rim shards flat and scatters glass round it (and logs it), so the reference program keeps the chuck off broken bottles with Broken[0].8. The ram-down sensor is a reed switch clamped to the cylinder barrel at the bottom of the stroke, with its LED and cable, instead of a light floating over the machine",
@@ -7286,7 +7314,7 @@ function renderSelBar(){const el=$('selbar');if(!el)return;const show=isScene()&
   const B=(k,ico,label,cls)=>`<button type="button" data-sb="${k}" class="${cls||''}" aria-label="${label}">${SBI[ico]}<span>${label}</span></button>`;let h='';
   const row=(t,btns)=>(t?`<div class="lbl">${t}</div>`:'')+`<div class="sbr">${btns}</div>`;
   if(running())h=row('Run mode <i>· tap buttons and switches to work them</i>',B('fit','fit','Fit')+B('z100','one','100%')+B('io','io','I/O',ui.hideIO?'':'on')+B('scene','props','Scene'));
-  else if(sc.placing)h=row(`Tap the scene to place: ${ex(DT[sc.placing].label)}`,B('cancel','x','Cancel'));
+  else if(sc.placing)h=row(`Tap the scene to place: ${ex((presetOf(sc.placing)||DT[sc.placing]||{label:sc.placing}).label)}`,B('cancel','x','Cancel'));
   else{const ds=selDevices();
     if(!ds.length)h=row(ui.multiSel?'Select several <i>· tap each device you want</i>':'',B('add','pal','Add Device','pri')+B('multi','multi',ui.multiSel?'Selecting':'Select Several',ui.multiSel?'on':'')+B('io','io','I/O',ui.hideIO?'':'on')+B('fit','fit','Fit')+B('scene','props','Scene'));
     else h=row((ds.length>1?ds.length+' devices':ex(ds[0].name))+(ui.multiSel?' <i>· selecting several: tap devices to add or remove, drag to move</i>':' <i>· drag to move, hold for the menu</i>'),B('ccw','ccw','15°')+B('cw','cw','15°')+B('q','q','90°')+B('props','props','Props')+B('dup','dup','Copy')+B('del','del','Delete','warn')+B('more','more','More')+B('done','done','Done'))}
@@ -7426,7 +7454,7 @@ function drawScene(){
     if(ds.length>1){const g=ds.every(d=>d.group&&d.group===ds[0].group);ctx.setLineDash(g?[]:[8,5]);ctx.strokeStyle=g?'#1f6fd0':'#3399ff';ctx.lineWidth=g?2:1.5;ctx.strokeRect(x0-10,y0-18,x1-x0+20,y1-y0+34);ctx.setLineDash([]);
       ctx.fillStyle=g?'#1f6fd0':'#3399ff';ctx.font='bold 10px Tahoma';ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.fillText(g?`Group · ${ds.length} devices`:`${ds.length} selected`,x0-8,y0-22)}
     ctx.setLineDash([])}}
-  if(sc.placing&&sc.cursor&&!running()){const d={type:sc.placing,name:DT[sc.placing].label,x:Math.round(sc.cursor.x/10)*10,y:Math.round(sc.cursor.y/10)*10,rot:0,params:defaultParams(sc.placing),addr:{}};ctx.save();ctx.globalAlpha=.5;drawDevice(ctx,d,DT[d.type].init(d),sim,true);ctx.restore()}
+  if(sc.placing&&sc.cursor&&!running()){const pre=presetOf(sc.placing),ty=pre?pre.type:sc.placing;if(DT[ty]){const d={type:ty,name:(pre||DT[ty]).label,x:Math.round(sc.cursor.x/10)*10,y:Math.round(sc.cursor.y/10)*10,rot:0,params:Object.assign(defaultParams(ty),pre?JSON.parse(JSON.stringify(pre.params)):{}),addr:{}};ctx.save();ctx.globalAlpha=.5;drawDevice(ctx,d,DT[ty].init(d),sim,true);ctx.restore()}}
   ctx.textAlign='left';ctx.font='bold 12px '+F;
   if(!running()){ctx.textAlign='center';ctx.font='bold 16px '+F;ctx.fillStyle=sceneBg().dark?'#ff6b61':'#d00000';ctx.fillText(ui.mode==='offline'?'CONTROLLER OFFLINE':'PROGRAM MODE: editing the scene. Select Run Mode to scan and operate.',W/2,24);if(ui.notice){ctx.font='12px '+F;ctx.fillStyle=sceneBg().dark?'#d6dbe1':'#444';ctx.fillText(ui.notice,W/2,44)}}
   else{ctx.fillStyle=sceneBg().dark?'#3ddc5a':'#0a7a2a';ctx.fillText(ui.mode==='run'?'● SCANNING, OUTPUTS ENABLED':'● TEST MODE: OUTPUTS DISABLED',12,20)}
