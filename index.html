@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Logix Connect"><meta name="mobile-web-app-capable" content="yes"><meta name="theme-color" content="#1a2433"><link rel="icon" href="icon-192.png?v=98"><link rel="apple-touch-icon" href="icon-192.png?v=90"><style>:root{color-scheme:light}html,body{margin:0;height:100%;overscroll-behavior:none;-webkit-text-size-adjust:100%}[hidden]{display:none!important}</style><script>window.LOGIX_MOBILE=true</script></head><body><title>Logix Connect</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Logix Connect"><meta name="mobile-web-app-capable" content="yes"><meta name="theme-color" content="#1a2433"><link rel="icon" href="icon-192.png?v=98"><link rel="apple-touch-icon" href="icon-192.png?v=90"><link rel="manifest" href="manifest.json"><style>:root{color-scheme:light}html,body{margin:0;height:100%;overscroll-behavior:none;-webkit-text-size-adjust:100%}[hidden]{display:none!important}</style><script>window.LOGIX_MOBILE=true</script></head><body><title>Logix Connect</title>
 <style>
 /* Layout: a Logix Designer style workspace — title/menu/standard/online toolbars, Controller Organizer at left,
    tabbed documents (routine, tags) with the line simulator docked above, output window and status bar below.
@@ -503,7 +503,7 @@ table.grid{border-collapse:collapse;width:100%;font-size:11.5px;table-layout:fix
 .tagbrowser .row.new.sel{color:#fff}
 .tagbrowser .foot{padding:3px 6px;color:var(--muted);border-top:1px solid var(--border2);background:var(--chrome)}
 /* guided mode panel */
-.guide{position:fixed;right:14px;top:150px;width:380px;max-height:calc(100vh - 190px);overflow:auto;z-index:60;background:var(--panel,#fff);color:var(--ink,#1d2227);border:1px solid #9aa5b1;border-radius:6px;box-shadow:0 8px 28px rgba(0,0,0,.25);font-size:12.5px}
+.guide{position:fixed;right:14px;top:150px;width:380px;max-height:calc(100vh - 190px);max-height:calc(100dvh - 190px);overflow:auto;z-index:60;background:var(--panel,#fff);color:var(--ink,#1d2227);border:1px solid #9aa5b1;border-radius:6px;box-shadow:0 8px 28px rgba(0,0,0,.25);font-size:12.5px}
 .guide .gh{display:flex;align-items:center;gap:6px;padding:7px 9px;cursor:move;touch-action:none;background:#1e2227;color:#e6e9ee;border-radius:6px 6px 0 0;position:sticky;top:0;z-index:1}.guide .gh b{flex:1;color:#3ddc5a}.guide .gh .gp{font-size:11px;color:#aeb6c0}.guide .gh .tb{color:#e6e9ee;background:transparent;border-color:#4a5462}
 .guide .gbar{display:flex;gap:3px;padding:6px 9px 0}.guide .gbar span{flex:1;height:6px;border-radius:3px;background:#d5dbe1;cursor:pointer}.guide .gbar span.d{background:#2e9e4f}.guide .gbar span.cur{outline:2px solid #1e4f8f;outline-offset:1px}
 .guide .gbody{padding:8px 11px 10px}.guide .gt{font-weight:700;font-size:13.5px;margin:2px 0 4px}.guide .gch{font-weight:400;color:#6b7480;font-size:11px;margin-left:4px}.guide p{margin:0 0 6px;line-height:1.4}
@@ -590,7 +590,8 @@ body.theme-logix .iomon{--iobg:#16294f;--iohead:#10203f;--iopanel:#0f1b33;--iohd
 .iomon .empty{padding:20px;text-align:center;color:var(--iomute)}
 .iomon .r .led{cursor:pointer}.iomon .r.forced .led{box-shadow:0 0 0 2px #e0a020}.iomon .r.forced .v{color:#9a5b00;font-weight:600}.iomon .r .fc{display:inline-block;margin-left:4px;padding:0 4px;border-radius:2px;background:#fff1c2;color:#7a4a00;font-size:10px;font-weight:600}
 .iomon .r.tag .pt{color:#1f7a3d}.iomon .mod.tags .mh{background:#e4f1e8}
-.iodock{width:380px;padding:0;display:flex;flex-direction:column;overflow:hidden}.iodock .iohead{padding:4px 8px;gap:6px}.iodock .iohead .t{font-size:12px}.iodock .iohead .sub{display:none}.iodock .iohead input[type=text]{width:110px;flex:1;min-width:60px}.iodock .iohead .legend{display:none}.iodock .iohead .drawerclose{float:none;margin-left:auto}
+.iodock{width:380px;padding:0;display:flex;flex-direction:column;overflow:hidden}
+.doctabs,.iodock,.watchpane,td[data-dtbit],.tree{-webkit-touch-callout:none}.iodock .iohead{padding:4px 8px;gap:6px}.iodock .iohead .t{font-size:12px}.iodock .iohead .sub{display:none}.iodock .iohead input[type=text]{width:110px;flex:1;min-width:60px}.iodock .iohead .legend{display:none}.iodock .iohead .drawerclose{float:none;margin-left:auto}
 .iodock .cols{grid-template-columns:1fr;gap:8px;padding:6px 8px;overflow:auto;flex:1;min-height:0}.iodock .col h3{font-size:11px;margin-bottom:4px}.iodock .mod{margin-bottom:6px}.iodock .mod .mh{padding:2px 6px;font-size:11px}.iodock .mod .mh .n{font-size:10px}
 .iodock .r{grid-template-columns:12px minmax(0,1.1fr) 34px minmax(0,1fr);gap:5px;padding:2px 6px;font-size:11px}.iodock .r .who .rg{display:none}
 .props.iodock .drawerclose{display:block;border:1px solid transparent;background:transparent;color:inherit;cursor:pointer;font-size:15px;line-height:1;padding:2px 7px;border-radius:3px}.props.iodock .drawerclose:hover{background:var(--sel,#cfe3f7);border-color:var(--border)}
@@ -634,7 +635,7 @@ body.theme-logix .iomon{--iobg:#16294f;--iohead:#10203f;--iopanel:#0f1b33;--iohd
   body.phoneui{font-size:13px}
   body.phoneui input, body.phoneui select, body.phoneui textarea, body.phoneui .ladder .rtxt textarea, body.phoneui .grid td input, body.phoneui .grid td select, body.phoneui .props input[type=text], body.phoneui .props input[type=number], body.phoneui .props select{font-size:16px}
   body.phoneui .titlebar{height:calc(34px + env(safe-area-inset-top,0px))} body.phoneui #app{position:fixed;left:0;top:0;right:0;bottom:0;height:auto} body.phoneui .statusbar{order:9} body.phoneui .bottomnav{order:10}
-  html.standalone,html.standalone body{height:100vh} html.standalone body.phoneui #app{bottom:auto;height:100vh}
+  html.standalone,html.standalone body{height:100vh;height:100dvh} html.standalone body.phoneui #app{bottom:auto;height:100vh;height:100dvh}
   body.phoneui.nort #tbAddRung,body.phoneui.nort #tbEditRung,body.phoneui.nort #tbCmt,body.phoneui.nort #tbDelRung,body.phoneui.nort #tbUp,body.phoneui.nort #tbDown{display:none}
   body.phoneui .modal{padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:max(16px,env(safe-area-inset-bottom,0px))} body.phoneui .titlebar .wc{display:none}
   body.phoneui .menubar{overflow-x:auto;height:30px} body.phoneui .menubar button{padding:0 10px;white-space:nowrap}
@@ -6869,6 +6870,19 @@ const ladLPEnd=e=>{clearTimeout(ladLP.t);ladLP.t=null;if(ladLP.fired){e.preventD
 $('ladder').addEventListener('pointerup',ladLPEnd,true);$('ladder').addEventListener('pointercancel',()=>{clearTimeout(ladLP.t);ladLP.t=null},true);
 $('ladder').addEventListener('click',e=>{if(ladLP.fired){ladLP.fired=false;e.preventDefault();e.stopImmediatePropagation()}},true);
 $('ladder').addEventListener('dblclick',e=>{if(ladLP.fired){ladLP.fired=false;e.preventDefault();e.stopImmediatePropagation()}},true);
+/* touch everywhere else (organizer, doc tabs, bit grid, watch pane, I/O dock, cross reference): iOS fires neither contextmenu nor a dependable
+   dblclick, so a long press becomes a right-click and a double tap a double-click. The ladder, tag grid and canvases keep their own gestures;
+   a long press swallows the tap only when something opened a menu, and a native dblclick right after a synthetic one is dropped. */
+{const OWN='#ladder,#gridwrap,canvas,.sted,.rtxt,textarea,input,select',NOTAP='#tree';const lp={t:null,x:0,y:0,fired:false};let tap={t:0,x:0,y:0},synthAt=0;
+  document.addEventListener('pointerdown',e=>{lp.fired=false;if(e.pointerType!=='touch'||e.target.closest(OWN))return;const tgt=e.target,x=e.clientX,y=e.clientY;lp.x=x;lp.y=y;clearTimeout(lp.t);
+    lp.t=setTimeout(()=>{lp.t=null;lp.fired=!tgt.dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:x,clientY:y}));if(lp.fired)try{navigator.vibrate&&navigator.vibrate(12)}catch(err){}},550)},true);
+  document.addEventListener('pointermove',e=>{if(lp.t&&Math.hypot(e.clientX-lp.x,e.clientY-lp.y)>8){clearTimeout(lp.t);lp.t=null}},true);
+  document.addEventListener('pointercancel',()=>{clearTimeout(lp.t);lp.t=null},true);
+  document.addEventListener('pointerup',e=>{clearTimeout(lp.t);lp.t=null;if(e.pointerType!=='touch'||lp.fired||e.target.closest(OWN)||e.target.closest(NOTAP))return;const now=Date.now();
+    if(now-tap.t<350&&Math.hypot(e.clientX-tap.x,e.clientY-tap.y)<24){tap.t=0;synthAt=now;e.target.dispatchEvent(new MouseEvent('dblclick',{bubbles:true,cancelable:true,clientX:e.clientX,clientY:e.clientY}))}
+    else tap={t:now,x:e.clientX,y:e.clientY}},true);
+  document.addEventListener('click',e=>{if(lp.fired){lp.fired=false;e.preventDefault();e.stopImmediatePropagation()}},true);
+  document.addEventListener('dblclick',e=>{if(e.isTrusted&&Date.now()-synthAt<600){e.preventDefault();e.stopImmediatePropagation()}},true)}
 /* ladder: element selection, element drag, operand click, add-leg */
 $('ladder').addEventListener('pointerdown',e=>{if(e.target.closest('.sted'))return;if(ladLP.fired&&e.pointerType==='touch')ladLP.fired=false;
   const el=e.target.closest('rect.hit.elem');if(!el||document.querySelector('.rtxt textarea'))return;
@@ -8040,6 +8054,10 @@ function start(hot){
     else if(state.phoneUI===undefined&&window.matchMedia('(max-width:760px)').matches&&(window.LOGIX_MOBILE||navigator.standalone||window.matchMedia('(display-mode: standalone)').matches))state.phoneUI=true}catch(e){}
   document.body.classList.toggle('phoneui',!!state.phoneUI);applyTheme();
   try{if(navigator.standalone||window.matchMedia('(display-mode: standalone)').matches)document.documentElement.classList.add('standalone')}catch(e){}
+  // offline: on a hosted (https) page a service worker keeps the app and its icon cached, so it opens with no signal; file:, the bridge and the host shells skip it
+  try{if(location.protocol==='https:'&&'serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
+  // ask the browser not to evict saved projects (Safari otherwise clears site storage after about a week unused, unless added to the home screen)
+  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist().catch(()=>{})}catch(e){}
   if(phone()){ui.zoom='fit';ui.zoomInit=true;ui.orgHidden=true;ui.outHidden=true;ui.hidePalette=true;ui.hideProps=true;ui.simDocked=false;$('docSim').appendChild($('simdock'));ui.openDocs.push('sim')}
   initToolbarIcons();rebuildSim();initWatch();initSplitters();
   if(!(hot&&hot.state))showSplash(()=>newProjectDlg(true));
