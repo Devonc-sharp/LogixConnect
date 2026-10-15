@@ -70,7 +70,7 @@ Bambu Studio colours parts, not the bodies inside one STEP, so use the two-file 
 1. Open the card's folder, e.g. `step_parts/SN-4801_SODA_good/`.
 2. Select **both** files (`SN-4801_1_base_dark.step` and `SN-4801_2_features_red.step`) and drag them onto the plate together.
 3. Answer **Yes** to "Load these files as a single object with multiple parts?".
-4. In the Objects list, expand the card. Give `..._1_base_dark` your dark filament and `..._2_features_red` red (right-click the part → Change filament, or use the filament number beside it).
+4. In the Objects list, expand the card. The parts are named: `SN-4801 base` gets your dark filament; every `SN-4801 red …` piece (bottle, label letters, code) gets red. Shift-click to select all the red rows, right-click → Change filament.
 5. Print face up, with 0.2 mm layers or finer. Each 1.2 mm wall is three lines.
 
 The single files in `step/` hold both bodies, for CAD.

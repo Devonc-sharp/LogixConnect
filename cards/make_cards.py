@@ -169,6 +169,22 @@ def build(r, k):
     return asm, base, red, g, info
 
 
+def red_names(sn, prod, red):
+    """Name each red piece so the slicer's list reads SN-4801 red bottle / red code / red label S, O, D, A."""
+    sols = red.Solids()
+    code = [x for x in sols if x.BoundingBox().xmin > 55]
+    rest = [x for x in sols if x.BoundingBox().xmin <= 55]
+    rest.sort(key=lambda x: -x.Volume())
+    out = [(f"{sn} red bottle", rest[0])] if rest else []
+    letters = sorted(rest[1:], key=lambda x: x.BoundingBox().xmin)
+    for i, x in enumerate(letters):
+        ch = prod[i] if len(letters) == len(prod) else str(i + 1)
+        out.append((f"{sn} red label {ch}", x))
+    for i, x in enumerate(code):
+        out.append((f"{sn} red code" + ("" if len(code) == 1 else f" {i + 1}"), x))
+    return out
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     only = sys.argv[1:]
@@ -184,8 +200,13 @@ if __name__ == '__main__':
             # the same card as two files, one per colour: Bambu Studio colours a part, not a STEP body. Load both together and
             # answer Yes to "load as a single object with multiple parts", then give each part its filament
             d = os.path.join(OUT_PARTS, fn[:-5]); os.makedirs(d, exist_ok=True)
-            cq.exporters.export(base, os.path.join(d, f"{sn}_1_base_dark.step"))
-            cq.exporters.export(red, os.path.join(d, f"{sn}_2_features_red.step"))
+            dark, rc = cq.Color(0.08, 0.08, 0.1), cq.Color(0.85, 0.08, 0.08)
+            a1 = cq.Assembly(name=f"{sn}_base_file"); a1.add(base, name=f"{sn} base", color=dark)   # the names are what the slicer lists
+            a1.export(os.path.join(d, f"{sn}_1_base_dark.step"))
+            a2 = cq.Assembly(name=f"{sn}_red_file")
+            for nm, sol in red_names(sn, prod, red):
+                a2.add(sol, name=nm, color=rc)
+            a2.export(os.path.join(d, f"{sn}_2_features_red.step"))
             info['file'] = fn
             info['red_volume_mm3'] = round(red.Volume(), 1)
             index.append(info)
