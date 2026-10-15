@@ -15,6 +15,7 @@ from matplotlib.font_manager import FontProperties
 from ppf.datamatrix import DataMatrix
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'step')
+OUT_PARTS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'step_parts')
 W, H, T = 100.0, 70.0, 4.0           # card blank
 INLAY, RAISE = 0.8, 0.6               # feature depth into the base / height above it
 KEY = 10.0                            # keyed corner: 45-degree chamfer, top right
@@ -180,6 +181,11 @@ if __name__ == '__main__':
             asm, base, red, g, info = build(r, k)
             fn = f"{sn}_{prod}_{info['defect'].replace(' ', '-')}.step"
             asm.export(os.path.join(OUT, fn))
+            # the same card as two files, one per colour: Bambu Studio colours a part, not a STEP body. Load both together and
+            # answer Yes to "load as a single object with multiple parts", then give each part its filament
+            d = os.path.join(OUT_PARTS, fn[:-5]); os.makedirs(d, exist_ok=True)
+            cq.exporters.export(base, os.path.join(d, f"{sn}_1_base_dark.step"))
+            cq.exporters.export(red, os.path.join(d, f"{sn}_2_features_red.step"))
             info['file'] = fn
             info['red_volume_mm3'] = round(red.Volume(), 1)
             index.append(info)

@@ -54,7 +54,8 @@ All dimensions are in mm, measured from the card's bottom-left corner.
 
 ## Files
 
-- `step/`: one STEP per card, e.g. `SN-4804_SODA_short-fill.step`. `cards.json` lists them all.
+- `step_parts/`: one folder per card with two STEP files, base and features (for the printer).
+- `step/`: one STEP per card with both bodies, e.g. `SN-4804_SODA_short-fill.step`. `cards.json` lists them all.
 - `preview/`:
   - `cards-colour.png`: as printed.
   - `cards-camera.png`: through the red filter.
@@ -64,6 +65,12 @@ All dimensions are in mm, measured from the card's bottom-left corner.
 
 ## Printing (Bambu H2D, 0.4 mm nozzle)
 
-1. Import a STEP, and answer *yes* to loading it as one object with multiple parts.
-2. Give the base part a dark filament and the features part red.
-3. Print face up, with 0.2 mm layers or finer. Each 1.2 mm wall is three lines.
+Bambu Studio colours parts, not the bodies inside one STEP, so use the two-file version of each card in `step_parts/`:
+
+1. Open the card's folder, e.g. `step_parts/SN-4801_SODA_good/`.
+2. Select **both** files (`SN-4801_1_base_dark.step` and `SN-4801_2_features_red.step`) and drag them onto the plate together.
+3. Answer **Yes** to "Load these files as a single object with multiple parts?".
+4. In the Objects list, expand the card. Give `..._1_base_dark` your dark filament and `..._2_features_red` red (right-click the part → Change filament, or use the filament number beside it).
+5. Print face up, with 0.2 mm layers or finer. Each 1.2 mm wall is three lines.
+
+The single files in `step/` hold both bodies, for CAD.
