@@ -74,3 +74,18 @@ Bambu Studio colours parts, not the bodies inside one STEP, so use the two-file 
 5. Print face up, with 0.2 mm layers or finer. Each 1.2 mm wall is three lines.
 
 The single files in `step/` hold both bodies, for CAD.
+
+## Calibration plate (`calplate/`, `make_calplate.py`)
+
+A checkerboard for In-Sight's grid calibration, so the camera's tools report in mm.
+
+- Same footprint as the bottle cards: 100 x 70 x 4 mm with the 10 mm keyed corner. It sits in the card nest, and its top face is at the height of a card's base, which is the plane the camera measures in.
+- Grid: 16 x 12 squares of 5.00 mm (80 x 60 mm), starting at x 10, y 5 (mm from the bottom-left corner). No fiducial, so In-Sight picks the origin.
+- The light squares are red, inlaid **flush**, 0.6 mm deep. The top is flat, with no raised edges to throw shadows under the low-angle light. Each square is 0.05 mm smaller per side, so neighbouring squares don't share a corner; the vertex positions are unchanged.
+- The underside is engraved "LOGIX CONNECT CAL GRID 5.00 mm 16x12".
+- Files:
+  - `CAL-5mm.3mf`: opens in Bambu Studio already in two colours (Plate = filament 1, Squares = filament 2).
+  - `CAL-5mm.step`: both bodies in one file.
+  - `step_parts/`: one file per colour.
+- Print face up, with 0.2 mm layers.
+- Measure 10 squares (50 mm) with calipers and enter the measured pitch in the calibration, not 5.00. Printers run a little off in XY.
