@@ -9,7 +9,8 @@ trailing edge. The gate at the front of the magazine leaves a gap one card high 
 the one above it is held back. On the way home the plate slides out from under the stack and the next card drops.
 Two gate inserts: 5.0 mm for the bottle cards (4.6 mm with their raised print), 3.0 mm for the Level 11 lot cards (2.6 mm).
 Stops: home when the shuttle's ribs reach the closed back end of their grooves (the plate's face 1 mm behind the stack);
-full stroke when the grip meets the magazine's back wall (the face at x 105, the card fully in the nest).
+full stroke when the grip meets the magazine's back wall (the face at x 120: the card in the nest at x 120..220, centred at
+x 170 under the CCS FPQ3-120, whose stand straddles the track; the light spans x 110..240, 2 mm clear of the magazine).
 The grooves are open at the joint: slide the shuttle in from the front, then fit the nest half.
 """
 import os
@@ -36,12 +37,14 @@ X_BACK = -110.0             # back of the base
 X_SPLIT = 120.0             # the base prints in two pieces joined by a dovetail here (230 and 95 mm long)
 X_MAG0, X_MAG1 = 0.0, 101.0 # magazine cavity
 X_GATE0, X_GATE1 = 101.0, 105.0
-X_END = 215.0               # front of the base: past this the pushed card tips off into the tray
-PLATE_L = 109.0             # shuttle plate length behind its pushing face
+X_END = 225.0               # end of the flat floor: the nest holds the card at x 120..220, centred at 170 under the light
+RAMP_L, RAMP_DROP = 21.0, 12.0   # then a chute, about 30 degrees down, that tips the pushed-out card into the tray
+PLATE_L = 124.0             # shuttle plate length behind its pushing face: full stroke puts the face at x 120
 GRIP_L, GRIP_H = 15.0, 14.0
 GROOVE_X0 = -106.0          # the grooves stop here: the ribs meet the end at home (the plate's face at x -1)
 RIB_BACK = 105.0            # ribs run from face-105 to face-1
-TRAY_X0 = X_END + 1.0
+TRAY_X0 = 248.0             # past the light stand's legs (they end at x 246.5)
+TRAY_H = 12.0
 CLR = 0.2
 
 def bx(x0, x1, y0, y1, z0, z1):
@@ -98,9 +101,22 @@ def key_prism(gap):
     pts = [(X_MAG1, hw), (X_MAG1 - KEY_LEG, hw), (X_MAG1, hw - KEY_LEG)]
     return cq.Workplane('XY').polyline(pts).close().extrude(MAG_H - gap - 1).translate((0, 0, ZF + gap + 1))
 
+def chute():
+    """From the end of the floor down about 30 degrees toward the tray, with low side walls; it ends over the tray."""
+    hw = CH_W / 2
+    prof = [(X_END, ZF), (X_END + RAMP_L, ZF - RAMP_DROP), (X_END + RAMP_L, ZF - RAMP_DROP - 3), (X_END, 0), (X_END - 0.01, 0), (X_END - 0.01, ZF)]
+    floor = cq.Workplane('XZ').polyline(prof).close().extrude(-(hw + WALL)).union(cq.Workplane('XZ').polyline(prof).close().extrude(hw + WALL))
+    sides = None
+    for sg in (-1, 1):
+        y0, y1 = (hw, hw + WALL) if sg > 0 else (-hw - WALL, -hw)
+        wp = [(X_END, ZF + LOW_H), (X_END + RAMP_L, ZF - RAMP_DROP + LOW_H), (X_END + RAMP_L, ZF - RAMP_DROP), (X_END, ZF)]
+        w = cq.Workplane('XZ').polyline(wp).close().extrude(-(y1 - y0)).translate((0, y0, 0))
+        sides = w if sides is None else sides.union(w)
+    return floor.union(sides)
+
 def base_b():
     b = hollow_base(X_SPLIT, X_END)
-    b = b.union(walls(X_SPLIT, X_END, LOW_H))
+    b = b.union(walls(X_SPLIT, X_END, LOW_H)).union(chute())
     b = b.union(bx(X_SPLIT, X_SPLIT + 18, -CH_W / 2 - WALL, CH_W / 2 + WALL, 0, ZF - FLOOR))
     b = b.cut(dovetail(CLR))
     
@@ -123,7 +139,7 @@ def gate(gap):
 
 def tray():
     """Two compartments side by side (y): slide it sideways to put GOOD or REJECT under the drop."""
-    L, Wc, Hh, t = 120.0, 92.0, 18.0, 2.0
+    L, Wc, Hh, t = 120.0, 92.0, TRAY_H, 2.0
     x0 = TRAY_X0
     t_ = bx(x0, x0 + L, -Wc - t * 1.5, Wc + t * 1.5, 0, Hh)
     t_ = t_.cut(bx(x0 + t, x0 + L - t, -Wc - t / 2, -t / 2, t, Hh + 1)).cut(bx(x0 + t, x0 + L - t, t / 2, Wc + t / 2, t, Hh + 1))
@@ -152,6 +168,6 @@ if __name__ == '__main__':
         asm.add(p, name=nm, color=cq.Color(*cols[nm[0]]))
     for i in range(6):
         asm.add(card(X_MAG0 + 0.5, ZF + i * 4.6), name=f'card_stack_{i}', color=cq.Color(0.1, 0.1, 0.12))
-    asm.add(card(105.5, ZF), name='card_in_nest', color=cq.Color(0.1, 0.1, 0.12))
+    asm.add(card(120.5, ZF), name='card_in_nest', color=cq.Color(0.1, 0.1, 0.12))
     asm.export(os.path.join(OUT, 'hopper_assembly.step'))
     print('assembly ok')

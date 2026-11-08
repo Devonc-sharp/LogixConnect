@@ -92,20 +92,21 @@ A checkerboard for In-Sight's grid calibration, so the camera's tools report in 
 
 ## Card hopper and slider (`hopper/`, `make_hopper.py`)
 
-A gravity magazine and a push shuttle. One push carries the bottom card into the nest under the camera, and the same push shoves the card already in the nest off the end into a tray.
+A gravity magazine and a push shuttle. One push carries the bottom card into the nest under the camera, and the same push shoves the card already in the nest down a chute into a tray. The nest sits under the CCS FPQ3-120 low-angle light, whose stand straddles the track.
 
 - **Shuttle:** a 1.8 mm plate, thinner than any card, so it pushes only the bottom card. It runs on two ribs in grooves in the floor.
   - Home: the ribs reach the closed back end of the grooves.
-  - Full stroke: the grip meets the magazine's back wall, which leaves the card in the nest at x 105–205 mm.
+  - Full stroke: the grip meets the magazine's back wall. That leaves the card in the nest at x 120–220 mm, centred at x 170.
+- **Light:** it spans x 110–240 with its emitting face at Z 64, about 34 mm over a card. It clears the magazine by 2 mm and the gate by 5 mm. The 88 mm window sees x 126–214 of the card.
 - **Gate:** a swappable insert at the front of the magazine. `gate_bottle-cards-5.0mm` is for the bottle cards (4.6 mm with their print); `gate_lot-cards-3.0mm` is for the Level 11 cards (2.6 mm). The gap passes one card and holds back the next.
 - **Key:** a prism in the magazine's front corner on the +y side. A card loaded with its cut corner the wrong way won't sit flat. The prism starts above the bottom card, so it never blocks the one being pushed.
-- **Height:** the card plane is 25 mm above the baseboard, so a card pushed out of the nest drops into the tray. Re-focus the camera, and lay the calibration plate in the nest to calibrate at that height.
-- **Tray:** two compartments. Slide it sideways to put GOOD or REJECT under the drop.
+- **Height:** the card plane is 25 mm above the baseboard. Set the light's posts to keep your working distance over the card, and lay the calibration plate in the nest to calibrate at the card's height.
+- **Chute and tray:** the chute runs about 30° down from the end of the floor (x 225–246). The tray starts at x 248, past the stand's legs, and is 12 mm tall. Slide it sideways to put GOOD or REJECT under the chute.
 - **Parts:**
   1. Base with magazine: 242 mm, printed upright.
-  2. Base with nest: 95 mm, joins part 1 with a dovetail.
-  3. Shuttle: print it upside down so the plate's top is smooth.
+  2. Base with nest and chute: 126 mm, joins part 1 with a dovetail.
+  3. Shuttle: 139 mm. Print it upside down so the plate's top is smooth.
   4. The two gates.
   5. Exit tray.
 - **Assembly:** slide the shuttle in from the front, along the grooves, then fit the nest half.
-- **Not checked against the bench:** clearance under the CCS low-angle light and its legs, the copy stand's baseboard size, and which corner the key should be in for your camera's view. They're all parameters at the top of the script.
+- **Checked:** every part against the light and the four leg envelopes from `hopper_with_light.step`, at home and at full stroke, with the tray in both positions. Nothing touches.
