@@ -98,7 +98,7 @@ A gravity magazine and a push shuttle. One push carries the bottom card into the
   - Home: the ribs reach the closed back end of the grooves.
   - Full stroke: the grip meets the magazine's back wall. That leaves the card in the nest at x 120–220 mm, centred at x 170.
 - **Light:** it spans x 110–240 with its emitting face at Z 64, about 34 mm over a card. It clears the magazine by 2 mm and the gate by 5 mm. The 88 mm window sees x 126–214 of the card.
-- **Gate:** a swappable insert at the front of the magazine. `gate_bottle-cards-5.0mm` is for the bottle cards (4.6 mm with their print); `gate_lot-cards-3.0mm` is for the Level 11 cards (2.6 mm). The gap passes one card and holds back the next.
+- **Gate:** a swappable insert that drops into slots at the front of the magazine and hangs by its ears on the wall tops. `gate_bottle-cards-5.0mm` is for the bottle cards (4.6 mm with their print); `gate_lot-cards-3.0mm` is for the Level 11 cards (2.6 mm). The gap passes one card and holds back the next.
 - **Key:** a prism in the magazine's front corner on the +y side. A card loaded with its cut corner the wrong way won't sit flat. The prism starts above the bottom card, so it never blocks the one being pushed.
 - **Height:** the card plane is 25 mm above the baseboard. Set the light's posts to keep your working distance over the card, and lay the calibration plate in the nest to calibrate at the card's height.
 - **Chute and tray:** the chute runs about 30° down from the end of the floor (x 225–246). The tray starts at x 248, past the stand's legs, and is 12 mm tall. Slide it sideways to put GOOD or REJECT under the chute.
@@ -110,5 +110,9 @@ A gravity magazine and a push shuttle. One push carries the bottom card into the
   5. The two gates, printed flat.
   6. Exit tray.
 - **One plate:** `hopper_one_plate.3mf` lays out all seven pieces in print orientation in 311 × 294 mm, on the H2D's 325 × 320 single-nozzle plate. Nothing needs support. The bases are solid in the model, so set infill to about 15 %.
-- **Assembly:** glue the grip on, slide the shuttle into the grooves from the front, then fit the nest half.
+- **Assembly**, in this order:
+  1. Slide the bare shuttle plate (ribs down) into the grooves from the front, at the joint end, and push it home.
+  2. Glue the grip's three pegs into the plate's holes behind the base. The grip can't pass under the magazine's back wall, so it goes on last.
+  3. Fit the nest half onto the dovetail from above.
+  4. Drop the gate into its slots; its ears rest on the wall tops.
 - **Checked:** every part against the light and the four leg envelopes from `hopper_with_light.step`, at home and at full stroke, with the tray in both positions. Nothing touches.

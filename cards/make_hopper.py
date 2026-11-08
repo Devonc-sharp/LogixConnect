@@ -11,7 +11,8 @@ Two gate inserts: 5.0 mm for the bottle cards (4.6 mm with their raised print), 
 Stops: home when the shuttle's ribs reach the closed back end of their grooves (the plate's face 1 mm behind the stack);
 full stroke when the grip meets the magazine's back wall (the face at x 120: the card in the nest at x 120..220, centred at
 x 170 under the CCS FPQ3-120, whose stand straddles the track; the light spans x 110..240, 2 mm clear of the magazine).
-The grooves are open at the joint: slide the shuttle in from the front, then fit the nest half.
+Assembly order: slide the bare shuttle plate into the grooves from the front (the grooves are open at the joint), push it
+home, then glue the grip onto its back end (the grip cannot pass under the magazine's back wall); then fit the nest half.
 """
 import os
 import cadquery as cq
@@ -143,9 +144,15 @@ def shuttle(face=0.0):
     return shuttle_plate(face).union(grip(face))
 
 def gate(gap):
+    """Slides down the slots in the magazine's side walls; its ears rest on top of the walls, which hangs its bottom edge
+    exactly one gap above the floor."""
     hw = CH_W / 2
-    g = bx(X_GATE0, X_GATE1, -hw - 1.8, hw + 1.8, ZF + gap, ZF + MAG_H + 6)
-    g = g.cut(bx(X_GATE0 - 1, X_GATE1 + 1, -12, 12, ZF + MAG_H - 4, ZF + MAG_H + 7))        # lift notch
+    top = ZF + MAG_H
+    g = bx(X_GATE0, X_GATE1, -hw - 1.8, hw + 1.8, ZF + gap, top + 6)
+    for sg in (-1, 1):
+        y0, y1 = (hw + 1.8, hw + WALL + 2) if sg > 0 else (-hw - WALL - 2, -hw - 1.8)
+        g = g.union(bx(X_GATE0, X_GATE1, y0, y1, top, top + 6))                                  # ears on the wall tops
+    g = g.cut(bx(X_GATE0 - 1, X_GATE1 + 1, -12, 12, top + 2, top + 7))                         # lift notch
     return g
 
 def tray():
