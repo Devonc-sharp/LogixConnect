@@ -89,3 +89,23 @@ A checkerboard for In-Sight's grid calibration, so the camera's tools report in 
   - `step_parts/`: one file per colour.
 - Print face up, with 0.2 mm layers.
 - Measure 10 squares (50 mm) with calipers and enter the measured pitch in the calibration, not 5.00. Printers run a little off in XY.
+
+## Card hopper and slider (`hopper/`, `make_hopper.py`)
+
+A gravity magazine and a push shuttle. One push carries the bottom card into the nest under the camera, and the same push shoves the card already in the nest off the end into a tray.
+
+- **Shuttle:** a 1.8 mm plate, thinner than any card, so it pushes only the bottom card. It runs on two ribs in grooves in the floor.
+  - Home: the ribs reach the closed back end of the grooves.
+  - Full stroke: the grip meets the magazine's back wall, which leaves the card in the nest at x 105–205 mm.
+- **Gate:** a swappable insert at the front of the magazine. `gate_bottle-cards-5.0mm` is for the bottle cards (4.6 mm with their print); `gate_lot-cards-3.0mm` is for the Level 11 cards (2.6 mm). The gap passes one card and holds back the next.
+- **Key:** a prism in the magazine's front corner on the +y side. A card loaded with its cut corner the wrong way won't sit flat. The prism starts above the bottom card, so it never blocks the one being pushed.
+- **Height:** the card plane is 25 mm above the baseboard, so a card pushed out of the nest drops into the tray. Re-focus the camera, and lay the calibration plate in the nest to calibrate at that height.
+- **Tray:** two compartments. Slide it sideways to put GOOD or REJECT under the drop.
+- **Parts:**
+  1. Base with magazine: 242 mm, printed upright.
+  2. Base with nest: 95 mm, joins part 1 with a dovetail.
+  3. Shuttle: print it upside down so the plate's top is smooth.
+  4. The two gates.
+  5. Exit tray.
+- **Assembly:** slide the shuttle in from the front, along the grooves, then fit the nest half.
+- **Not checked against the bench:** clearance under the CCS low-angle light and its legs, the copy stand's baseboard size, and which corner the key should be in for your camera's view. They're all parameters at the top of the script.
