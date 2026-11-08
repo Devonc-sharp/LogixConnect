@@ -51,15 +51,9 @@ def bx(x0, x1, y0, y1, z0, z1):
     return cq.Workplane('XY').box(x1 - x0, y1 - y0, z1 - z0, centered=False).translate((x0, y0, z0))
 
 def hollow_base(x0, x1):
-    """A floor plate on a skirt with cross ribs: light, stiff, prints without supports."""
+    """The base under the floor: solid, so it prints with no bridging; the slicer's infill (15 % is plenty) does the hollowing."""
     hw = CH_W / 2 + WALL
-    b = bx(x0, x1, -hw, hw, ZF - FLOOR, ZF)
-    b = b.union(bx(x0, x1, -hw, -hw + SKIRT, 0, ZF - FLOOR)).union(bx(x0, x1, hw - SKIRT, hw, 0, ZF - FLOOR))
-    b = b.union(bx(x0, x0 + SKIRT, -hw, hw, 0, ZF - FLOOR)).union(bx(x1 - SKIRT, x1, -hw, hw, 0, ZF - FLOOR))
-    x = x0 + 50
-    while x < x1 - 20:
-        b = b.union(bx(x, x + SKIRT, -hw, hw, 0, ZF - FLOOR)); x += 50
-    return b
+    return bx(x0, x1, -hw, hw, 0, ZF)
 
 def walls(x0, x1, h):
     hw = CH_W / 2
@@ -104,7 +98,7 @@ def key_prism(gap):
 def chute():
     """From the end of the floor down about 30 degrees toward the tray, with low side walls; it ends over the tray."""
     hw = CH_W / 2
-    prof = [(X_END, ZF), (X_END + RAMP_L, ZF - RAMP_DROP), (X_END + RAMP_L, ZF - RAMP_DROP - 3), (X_END, 0), (X_END - 0.01, 0), (X_END - 0.01, ZF)]
+    prof = [(X_END - 0.01, ZF), (X_END, ZF), (X_END + RAMP_L, ZF - RAMP_DROP), (X_END + RAMP_L, 0), (X_END - 0.01, 0)]   # solid to the plate: no overhang under the slope
     floor = cq.Workplane('XZ').polyline(prof).close().extrude(-(hw + WALL)).union(cq.Workplane('XZ').polyline(prof).close().extrude(hw + WALL))
     sides = None
     for sg in (-1, 1):
@@ -122,14 +116,31 @@ def base_b():
     
     return b
 
-def shuttle(face=0.0):
+PEG_D, PEG_H = 4.0, 6.0
+PEGS = [(-20.0,), (0.0,), (20.0,)]
+
+def shuttle_plate(face=0.0):
+    """Plate and ribs: prints face down (the plate's top on the bed), ribs up. The plate runs on under the grip."""
     hw = 35.0
-    p = bx(face - PLATE_L, face, -hw, hw, ZF, ZF + TS)
+    p = bx(face - PLATE_L - GRIP_L, face, -hw, hw, ZF, ZF + TS)
     for s in (-1, 1):
         p = p.union(bx(face - RIB_BACK, face - 1, s * GROOVE_Y - RIB_W / 2, s * GROOVE_Y + RIB_W / 2, ZF - RIB_H, ZF))
-    g = bx(face - PLATE_L - GRIP_L, face - PLATE_L, -hw, hw, ZF, ZF + GRIP_H)
+    for (y,) in PEGS:
+        p = p.cut(cq.Workplane('XY').circle(PEG_D / 2 + 0.15).extrude(TS + 2).translate((face - PLATE_L - GRIP_L / 2, y, ZF - 1)))
+    return p
+
+def grip(face=0.0):
+    """The grip: a block on the plate's back end with three pegs down through the plate (glue them). Its front face is the
+    full-stroke stop against the magazine's back wall; prints standing on its top face, pegs up."""
+    hw = 35.0
+    g = bx(face - PLATE_L - GRIP_L, face - PLATE_L, -hw, hw, ZF + TS, ZF + GRIP_H)
     g = g.cut(bx(face - PLATE_L - GRIP_L - 1, face - PLATE_L - 5, -22, 22, ZF + 4, ZF + GRIP_H + 1))   # finger pocket
-    return p.union(g)
+    for (y,) in PEGS:
+        g = g.union(cq.Workplane('XY').circle(PEG_D / 2).extrude(TS).translate((face - PLATE_L - GRIP_L / 2, y, ZF)))
+    return g
+
+def shuttle(face=0.0):
+    return shuttle_plate(face).union(grip(face))
 
 def gate(gap):
     hw = CH_W / 2
@@ -150,7 +161,7 @@ def card(x0, z0, th=4.6):
 
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
-    parts = {'1_base_magazine': base_a(), '2_base_nest': base_b(), '3_shuttle': shuttle(0.0)}
+    parts = {'1_base_magazine': base_a(), '2_base_nest': base_b(), '3_shuttle_plate': shuttle_plate(0.0), '3_shuttle_grip': grip(0.0)}
     for nm, gp in GATES.items():
         parts[f'4_gate_{nm}'] = gate(gp)
     parts['5_exit_tray'] = tray()

@@ -103,10 +103,12 @@ A gravity magazine and a push shuttle. One push carries the bottom card into the
 - **Height:** the card plane is 25 mm above the baseboard. Set the light's posts to keep your working distance over the card, and lay the calibration plate in the nest to calibrate at the card's height.
 - **Chute and tray:** the chute runs about 30° down from the end of the floor (x 225–246). The tray starts at x 248, past the stand's legs, and is 12 mm tall. Slide it sideways to put GOOD or REJECT under the chute.
 - **Parts:**
-  1. Base with magazine: 242 mm, printed upright.
+  1. Base with magazine: 242 mm.
   2. Base with nest and chute: 126 mm, joins part 1 with a dovetail.
-  3. Shuttle: 139 mm. Print it upside down so the plate's top is smooth.
-  4. The two gates.
-  5. Exit tray.
-- **Assembly:** slide the shuttle in from the front, along the grooves, then fit the nest half.
+  3. Shuttle plate: print it face down (ribs up).
+  4. Shuttle grip: print it top down, pegs up. Glue its three 4 mm pegs into the plate's holes.
+  5. The two gates, printed flat.
+  6. Exit tray.
+- **One plate:** `hopper_one_plate.3mf` lays out all seven pieces in print orientation in 311 × 294 mm, on the H2D's 325 × 320 single-nozzle plate. Nothing needs support. The bases are solid in the model, so set infill to about 15 %.
+- **Assembly:** glue the grip on, slide the shuttle into the grooves from the front, then fit the nest half.
 - **Checked:** every part against the light and the four leg envelopes from `hopper_with_light.step`, at home and at full stroke, with the tray in both positions. Nothing touches.
