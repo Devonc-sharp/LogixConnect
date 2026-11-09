@@ -106,10 +106,11 @@ A gravity magazine and a push shuttle. One push carries the bottom card into the
   1. Base with magazine: 242 mm.
   2. Base with nest and chute: 126 mm, joins part 1 with a dovetail.
   3. Shuttle plate: print it face down (ribs up).
-  4. Shuttle grip: print it top down, pegs up. Glue its three 4 mm pegs into the plate's holes.
+  4. Shuttle grip: print it top down, pegs up, as its **own piece**, never fused to the plate. Glue its three 4 mm pegs into the plate's three holes (the end without the ribs) after the plate is in the grooves.
   5. The two gates, printed flat.
   6. Exit tray.
-- **One plate:** `hopper_one_plate.3mf` lays out all seven pieces in print orientation in 311 × 294 mm, on the H2D's 325 × 320 single-nozzle plate. Nothing needs support. The bases are solid in the model, so set infill to about 15 %.
+- **One plate:** `hopper_one_plate.3mf` lays out all seven pieces in print orientation in 311 × 294 mm, on the H2D's 325 × 320 single-nozzle plate. Nothing needs support. The bases are solid in the model, so set infill to about 15 %. The shuttle plate lies with its holed end toward the grip; keep the two as separate objects in the slicer.
+- **Shuttle only:** `hopper_shuttle_only.3mf` has just the plate and the grip, 25 mm apart, for reprinting the shuttle without the rest.
 - **Assembly**, in this order:
   1. Slide the bare shuttle plate (ribs down) into the grooves from the front, at the joint end, and push it home.
   2. Glue the grip's three pegs into the plate's holes behind the base. The grip can't pass under the magazine's back wall, so it goes on last.
