@@ -1,8 +1,9 @@
-"""Logix Connect badge, three colours: the app's monoline mark -( o )- and the name, inlaid flush in a dark plate.
+"""Logix Connect badge, three colours: the app's monoline mark -( o )- and the name, laid out like the splash screen
+(the mark, "Logix Connect" in mixed case, PLC TRAINING WORKSTATION letter-spaced under it), inlaid flush in a dark plate.
 
 The mark is the title bar's SVG (viewBox 64: the two leads, the two coil arcs of radius 16, the dot), drawn with the
-same round-capped stroke. Colour 1 the plate (dark), colour 2 the mark's strokes and LOGIX CONNECT (white),
-colour 3 the dot, v2.0 and a thin inset frame (the accent: green in the app). Inlays are flush, 0.6 mm (three 0.2 mm
+same round-capped stroke. Colour 1 the plate (dark), colour 2 the mark's strokes and the name (white),
+colour 3 the dot, the subtitle and a thin inset frame (the accent: green in the app). Inlays are flush, 0.6 mm (three 0.2 mm
 layers), so the top is flat for printing face up.
 """
 import os, math
@@ -19,24 +20,53 @@ OUT = os.path.join(HERE, 'badge')
 NAME = 'LogixConnect-Badge'
 T, INLAY, CORNER_R = 3.0, 0.6, 6.0
 MARK_SCALE = 0.46          # mm per SVG unit: the mark about 29 mm wide
-TITLE_H, SUB_H = 6.2, 4.4  # letter heights (mm)
-SUB = 'v2.0'               # '' for none
+TITLE = 'Logix Connect'
+TITLE_H, SUB_H = 7.0, 3.0  # capital heights (mm)
+SUB = 'PLC TRAINING WORKSTATION'   # '' for none
+SUB_TRACK = None           # the subtitle's letter spacing, in ems; None: spaced to the title's width, as on the splash
+SUB_GAP = 3.0              # title baseline to subtitle top (mm)
 MARGIN, GAP = 5.0, 5.0
 FRAME_IN, FRAME_W = 2.0, 0.9
-FONT = FontProperties(fname=os.environ.get('BADGE_FONT') or '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf')   # BADGE_FONT=<a .ttf> to try another face
+FONT_FILE = os.environ.get('BADGE_FONT') or os.path.join(HERE, 'fonts', 'Selawik-Bold.ttf')   # Selawik: Microsoft's open (OFL) stand-in for Segoe UI, the splash's font
+FONT = FontProperties(fname=FONT_FILE)
 
 
-def text_poly(s, h):
+def _glyphs(s):
     tp = TextPath((0, 0), s, size=10, prop=FONT)
     geom = None
     for poly in sorted((Polygon(p).buffer(0) for p in tp.to_polygons() if len(p) >= 3), key=lambda p: -p.area):
         if geom is None: geom = poly
         elif geom.contains(poly): geom = geom.difference(poly)
         else: geom = geom.union(poly)
-    b = geom.bounds
-    geom = affinity.scale(geom, h / (b[3] - b[1]), h / (b[3] - b[1]), origin=(0, 0))
-    b = geom.bounds
-    return affinity.translate(geom, -b[0], -b[1])
+    return geom
+
+
+CAP10 = None
+def text_poly(s, cap, track=0.0):
+    """s set on the baseline y=0 from x=0, scaled so a capital is cap mm tall; track: extra letter spacing in ems"""
+    global CAP10
+    if CAP10 is None:
+        b = _glyphs('H').bounds; CAP10 = b[3] - b[1]
+    k = cap / CAP10
+    if not track:
+        return affinity.scale(_glyphs(s), k, k, origin=(0, 0))
+    parts = []
+    xs = _advances(s)
+    for i, ch in enumerate(s):
+        if ch != ' ':
+            g = _glyphs(ch)
+            parts.append(affinity.translate(g, xs[i] + i * track * 10, 0))
+    return affinity.scale(unary_union(parts), k, k, origin=(0, 0))
+
+
+def _advances(s):
+    """each character's pen position in s at size 10, from the font's advance widths and kerning-free layout"""
+    from fontTools.ttLib import TTFont
+    f = TTFont(FONT_FILE); cmap = f.getBestCmap(); hm = f['hmtx']; upm = f['head'].unitsPerEm
+    xs, x = [], 0.0
+    for ch in s:
+        xs.append(x); x += hm[cmap[ord(ch)]][0] * 10 / upm
+    return xs
 
 
 def mark():
@@ -57,28 +87,32 @@ def mark():
 def layout():
     st, dot = mark()
     st = affinity.scale(st, MARK_SCALE, MARK_SCALE, origin=(0, 0)); dot = affinity.scale(dot, MARK_SCALE, MARK_SCALE, origin=(0, 0))
-    title = text_poly('LOGIX CONNECT', TITLE_H)
-    sub = text_poly(SUB, SUB_H) if SUB else None
-    tw = title.bounds[2]
-    th = TITLE_H + (SUB_H + 3.2 if sub else 0)
+    title = text_poly(TITLE, TITLE_H)
+    sub = None
+    if SUB:
+        if SUB_TRACK is None:   # spread the subtitle to the title's width
+            w0 = text_poly(SUB, SUB_H, 1e-9).bounds[2]; w1 = text_poly(SUB, SUB_H, 0.1).bounds[2]
+            tr = 0.1 * (title.bounds[2] - 0.3 - w0) / (w1 - w0)
+        else:
+            tr = SUB_TRACK
+        sub = text_poly(SUB, SUB_H, max(tr, 1e-9))
+    tb = title.bounds; tw = max(tb[2], sub.bounds[2] if sub else 0)
+    # the block: the title's capitals on top, the subtitle under its baseline
+    top, bot = TITLE_H, (-SUB_GAP - SUB_H) if sub else tb[1]
     mb = st.bounds; mw, mh = mb[2] - mb[0], mb[3] - mb[1]
     W = 2 * MARGIN + 2 + mw + GAP + tw + 2
-    H = max(mh, th) + 2 * MARGIN + 6
+    H = max(mh, top - bot) + 2 * MARGIN + 6
     cy = H / 2
-    st = affinity.translate(st, MARGIN + 2 - mb[0], cy - (mb[1] + mb[3]) / 2); dot = affinity.translate(dot, MARGIN + 2 - mb[0], cy - (mb[1] + mb[3]) / 2)
-    tx = MARGIN + 2 + mw + GAP
-    ty = cy + th / 2 - TITLE_H
-    title = affinity.translate(title, tx, ty)
+    dx, dy = MARGIN + 2 - mb[0], cy - (mb[1] + mb[3]) / 2
+    st = affinity.translate(st, dx, dy); dot = affinity.translate(dot, dx, dy)
+    tx = MARGIN + 2 + mw + GAP; by = cy - (top + bot) / 2   # the title's baseline
+    title = affinity.translate(title, tx, by)
     if sub:
-        sub = affinity.translate(sub, tx, ty - 3.2 - SUB_H)
+        sub = affinity.translate(sub, tx + 0.3, by - SUB_GAP - SUB_H)
     plate = box(0, 0, W, H)
-    outer = box(FRAME_IN, FRAME_IN, W - FRAME_IN, H - FRAME_IN).buffer(-0.01)
-    frame = outer.difference(box(FRAME_IN + FRAME_W, FRAME_IN + FRAME_W, W - FRAME_IN - FRAME_W, H - FRAME_IN - FRAME_W))
-    # round the frame's corners to follow the plate's
     r_out = CORNER_R - FRAME_IN
-    o = box(FRAME_IN + r_out, FRAME_IN + r_out, W - FRAME_IN - r_out, H - FRAME_IN - r_out).buffer(r_out, quad_segs=24)
-    i = box(FRAME_IN + r_out, FRAME_IN + r_out, W - FRAME_IN - r_out, H - FRAME_IN - r_out).buffer(r_out - FRAME_W, quad_segs=24)
-    frame = o.difference(i)
+    core = box(FRAME_IN + r_out, FRAME_IN + r_out, W - FRAME_IN - r_out, H - FRAME_IN - r_out)
+    frame = core.buffer(r_out, quad_segs=24).difference(core.buffer(r_out - FRAME_W, quad_segs=24))
     white = unary_union([st, title])
     accent = unary_union([dot, frame] + ([sub] if sub else []))
     return W, H, plate, white, accent
