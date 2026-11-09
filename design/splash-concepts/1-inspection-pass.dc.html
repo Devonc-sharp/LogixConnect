@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Inspection pass</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@keyframes ipBottle{0%{transform:translateX(-260px)}22%{transform:translateX(560px)}58%{transform:translateX(560px)}80%{transform:translateX(1400px)}100%{transform:translateX(1400px)}}
+@keyframes ipBelt{to{background-position:-48px 0}}
+@keyframes ipFlash{0%,26%{opacity:0}27.5%{opacity:.85}31%{opacity:0}100%{opacity:0}}
+@keyframes ipBox{0%,30%{stroke-dashoffset:520;opacity:0}31%{opacity:1}38%{stroke-dashoffset:0;opacity:1}58%{opacity:1;stroke-dashoffset:0}62%,100%{opacity:0;stroke-dashoffset:0}}
+@keyframes ipCross{0%,30%{opacity:0;transform:scale(1.6)}36%{opacity:1;transform:scale(1)}58%{opacity:1}62%,100%{opacity:0}}
+@keyframes ipPass{0%,39%{opacity:0;transform:translateY(8px)}43%{opacity:1;transform:translateY(0)}60%{opacity:1}64%,100%{opacity:0}}
+@keyframes ipWord{0%,62%{opacity:0;transform:translateY(10px)}70%,95%{opacity:1;transform:translateY(0)}100%{opacity:0}}
+@keyframes ipLed{0%,26%{fill:#3a4149}27%,33%{fill:#3ddc5a}34%,100%{fill:#3a4149}}
+.ip-bottle{animation:ipBottle 8s cubic-bezier(.45,0,.2,1) infinite}
+.ip-belt{animation:ipBelt .5s linear infinite}
+.ip-flash{animation:ipFlash 8s linear infinite}
+.ip-box{stroke-dasharray:520;animation:ipBox 8s ease-out infinite}
+.ip-cross{transform-origin:center;transform-box:fill-box;animation:ipCross 8s ease-out infinite}
+.ip-pass{animation:ipPass 8s ease-out infinite}
+.ip-word{animation:ipWord 8s ease-out infinite}
+.ip-led{animation:ipLed 8s linear infinite}
+</style>
+</helmet>
+<div style="width: 1280px; height: 720px; position: relative; overflow: hidden; background: #e9ebee; font-family: Inter, 'Segoe UI', sans-serif; color: #1d2733">
+<div style="position: absolute; left: 64px; top: 56px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 12px; letter-spacing: .32em; font-weight: 600; color: #5a6a7a">STATION 1 · VISION</div>
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #5a6a7a">IS5603 · PatMax · Job: LOGIX_CONNECT.job</div>
+</div>
+<svg aria-hidden="true" width="190" height="210" viewBox="0 0 190 210" style="position: absolute; left: 545px; top: 40px">
+<rect x="45" y="0" width="100" height="18" rx="3" fill="#59626d"></rect>
+<rect x="30" y="18" width="130" height="92" rx="8" fill="#2c343d"></rect>
+<rect x="40" y="28" width="60" height="10" rx="2" fill="#3a4149"></rect>
+<circle class="ip-led" cx="140" cy="33" r="5" fill="#3a4149"></circle>
+<rect x="62" y="110" width="66" height="34" fill="#1d2329"></rect>
+<circle cx="95" cy="150" r="22" fill="#11161b" stroke="#59626d" stroke-width="4"></circle>
+<circle cx="95" cy="150" r="9" fill="#2f6fc2" opacity=".55"></circle>
+<path d="M30 190 L160 190" stroke="#c3cad2" stroke-width="2" stroke-dasharray="4 6"></path>
+</svg>
+<div class="ip-flash" style="position: absolute; left: 480px; top: 160px; width: 320px; height: 420px; background: radial-gradient(closest-side, rgba(255,255,255,1), rgba(255,255,255,0)); pointer-events: none"></div>
+<div style="position: absolute; left: 0; right: 0; top: 548px; height: 34px; background-color: #3a4149; background-image: repeating-linear-gradient(90deg, #4a525b 0 24px, #3a4149 24px 48px); border-top: 3px solid #59626d; border-bottom: 3px solid #23282e" class="ip-belt"></div>
+<div style="position: absolute; left: 0; right: 0; top: 588px; height: 132px; background: #d4d8dc"></div>
+<div class="ip-bottle" style="position: absolute; left: 0; top: 300px; width: 160px; height: 248px">
+<svg aria-hidden="true" width="160" height="248" viewBox="0 0 160 248">
+<rect x="58" y="0" width="44" height="26" rx="4" fill="#2f8f4e"></rect>
+<path d="M62 26 L98 26 L98 54 C130 66 140 86 140 112 L140 232 C140 241 133 248 124 248 L36 248 C27 248 20 241 20 232 L20 112 C20 86 30 66 62 54 Z" fill="#cfe3f2" stroke="#8fb3cf" stroke-width="2"></path>
+<path d="M22 150 L138 150 L138 232 C138 240 132 246 124 246 L36 246 C28 246 22 240 22 232 Z" fill="#7fb2e5" opacity=".8"></path>
+<rect x="20" y="118" width="120" height="74" fill="#ffffff" stroke="#c3cad2"></rect>
+<g transform="translate(34 136) scale(.42)" fill="none" stroke="#1d2733" stroke-width="5.5" stroke-linecap="round"><path d="M3 32h15M46 32h15"></path><path d="M26 18a16 16 0 0 0 0 28M38 18a16 16 0 0 1 0 28"></path></g>
+<circle cx="47.4" cy="149.4" r="2.3" fill="#2f8f4e"></circle>
+<text x="66" y="146" font-family="Inter, sans-serif" font-weight="700" font-size="11" fill="#1d2733">LOGIX</text>
+<text x="66" y="160" font-family="Inter, sans-serif" font-weight="700" font-size="11" fill="#1d2733">CONNECT</text>
+<text x="80" y="182" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#5a6a7a">L0200-001</text>
+<rect class="ip-box" x="14" y="112" width="132" height="86" fill="none" stroke="#2f8f4e" stroke-width="3"></rect>
+<g class="ip-cross"><path d="M80 140 L80 170 M65 155 L95 155" stroke="#2f8f4e" stroke-width="2"></path></g>
+</svg>
+</div>
+<div class="ip-pass" style="position: absolute; left: 760px; top: 330px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; background: #2f8f4e; color: #ffffff; font-weight: 700; font-size: 28px; letter-spacing: .08em; border-radius: 4px; width: fit-content">PASS</div>
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #1d2733">Score 98.6 · Label OK · Fill 98 %</div>
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #5a6a7a">Inspection 0200 · 148 ms</div>
+</div>
+<div class="ip-word" style="position: absolute; left: 64px; top: 250px; display: flex; align-items: center; gap: 22px">
+<svg aria-hidden="true" width="96" height="96" viewBox="0 0 64 64"><g fill="none" stroke="#1d2733" stroke-width="5.5" stroke-linecap="round"><path d="M3 32h15M46 32h15"></path><path d="M26 18a16 16 0 0 0 0 28M38 18a16 16 0 0 1 0 28"></path></g><circle cx="32" cy="32" r="5.5" fill="#2f8f4e"></circle></svg>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 56px; font-weight: 600; letter-spacing: -.015em; line-height: 1">Logix Connect</div>
+<div style="font-size: 12px; letter-spacing: .38em; font-weight: 600; color: #5a6a7a">PLC TRAINING WORKSTATION</div>
+</div>
+</div>
+<div style="position: absolute; left: 64px; bottom: 36px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5a6a7a">Trigger → acquire → PatMax → result · the app passes inspection and opens</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

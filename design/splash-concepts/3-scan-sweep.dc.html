@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scan sweep</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@keyframes scBar{0%{transform:translateY(0);opacity:0}3%{opacity:1}40%{transform:translateY(520px);opacity:1}44%,100%{transform:translateY(520px);opacity:0}}
+@keyframes scOn{0%,2%{stroke:#4a535d}6%,78%{stroke:#3ddc5a}86%,100%{stroke:#4a535d}}
+@keyframes scFill{0%,2%{fill:transparent}6%,78%{fill:#3ddc5a}86%,100%{fill:transparent}}
+@keyframes scDim{0%,46%{opacity:1}54%,86%{opacity:.16}94%,100%{opacity:1}}
+@keyframes scWord{0%,48%{opacity:0;transform:scale(.96)}56%,86%{opacity:1;transform:scale(1)}92%,100%{opacity:0}}
+.sc-bar{animation:scBar 8s linear infinite}
+.sc-on{animation:scOn 8s linear infinite}
+.sc-fill{animation:scFill 8s linear infinite}
+.r1{animation-delay:.25s}.r2{animation-delay:.85s}.r3{animation-delay:1.45s}.r4{animation-delay:2.05s}.r5{animation-delay:2.65s}
+.sc-lad{animation:scDim 8s ease-in-out infinite}
+.sc-word{animation:scWord 8s ease-out infinite;transform-origin:center}
+</style>
+</helmet>
+<div style="width: 1280px; height: 720px; position: relative; overflow: hidden; background: #101418; font-family: Inter, 'Segoe UI', sans-serif; color: #e8ecf0">
+<div class="sc-lad" style="position: absolute; inset: 0">
+<svg aria-hidden="true" width="1280" height="720" viewBox="0 0 1280 720" style="position: absolute; left: 0; top: 0">
+<g font-family="JetBrains Mono, monospace" font-size="13" fill="#6f7b86"><text x="72" y="155">0</text><text x="72" y="255">1</text><text x="72" y="355">2</text><text x="72" y="455">3</text><text x="72" y="555">4</text></g>
+<line x1="110" y1="100" x2="110" y2="620" stroke="#3ddc5a" stroke-width="5"></line>
+<line x1="1170" y1="100" x2="1170" y2="620" stroke="#3ddc5a" stroke-width="5"></line>
+<g fill="none" stroke-width="3">
+<path class="sc-on r1" d="M110 150 H300 M326 150 H1000 M1046 150 H1170" stroke="#4a535d"></path>
+<path class="sc-on r1" d="M300 132 V168 M326 132 V168" stroke="#4a535d"></path>
+<path class="sc-on r1" d="M1012 132 a18 18 0 0 0 0 36 M1034 132 a18 18 0 0 1 0 36" stroke="#4a535d"></path>
+<path class="sc-on r2" d="M110 250 H300 M326 250 H520 M546 250 H1000 M1046 250 H1170" stroke="#4a535d"></path>
+<path class="sc-on r2" d="M300 232 V268 M326 232 V268 M520 232 V268 M546 232 V268" stroke="#4a535d"></path>
+<path class="sc-on r2" d="M1012 232 a18 18 0 0 0 0 36 M1034 232 a18 18 0 0 1 0 36" stroke="#4a535d"></path>
+<path class="sc-on r3" d="M110 350 H300 M326 350 H640 M920 350 H1170" stroke="#4a535d"></path>
+<path class="sc-on r3" d="M300 332 V368 M326 332 V368" stroke="#4a535d"></path>
+<rect class="sc-on r3" x="640" y="318" width="280" height="76" stroke="#4a535d"></rect>
+<path class="sc-on r4" d="M110 450 H300 M326 450 H1000 M1046 450 H1170" stroke="#4a535d"></path>
+<path class="sc-on r4" d="M300 432 V468 M326 432 V468" stroke="#4a535d"></path>
+<path class="sc-on r4" d="M1012 432 a18 18 0 0 0 0 36 M1034 432 a18 18 0 0 1 0 36" stroke="#4a535d"></path>
+<path class="sc-on r5" d="M110 550 H300 M326 550 H520 M546 550 H1000 M1046 550 H1170" stroke="#4a535d"></path>
+<path class="sc-on r5" d="M300 532 V568 M326 532 V568 M520 532 V568 M546 532 V568" stroke="#4a535d"></path>
+<path class="sc-on r5" d="M1012 532 a18 18 0 0 0 0 36 M1034 532 a18 18 0 0 1 0 36" stroke="#4a535d"></path>
+</g>
+<circle class="sc-fill r5" cx="1023" cy="550" r="9" fill="transparent"></circle>
+<g font-family="Inter, sans-serif" font-weight="600" font-size="14" fill="#c9d1d8" text-anchor="middle">
+<text x="313" y="122">Power_OK</text><text x="1023" y="122">Controller_OK</text>
+<text x="313" y="222">Controller_OK</text><text x="533" y="222">IO_Mounted</text><text x="1023" y="222">IO_Ready</text>
+<text x="313" y="322">IO_Ready</text><text x="1023" y="422">Tags_Loaded</text>
+<text x="313" y="422">Tags_Loaded</text>
+<text x="313" y="522">Tags_Loaded</text><text x="533" y="522">Rungs_OK</text><text x="1023" y="522">App_Ready</text>
+</g>
+<g font-family="JetBrains Mono, monospace" font-size="13" fill="#c9d1d8"><text x="656" y="342" font-weight="700">TON  Load_TMR</text><text x="656" y="364">Preset   3000</text><text x="656" y="384">Accum    3000</text></g>
+</svg>
+<div class="sc-bar" style="position: absolute; left: 110px; right: 110px; top: 96px; height: 26px; background: linear-gradient(rgba(61,220,90,0), rgba(61,220,90,.28) 70%, rgba(61,220,90,.6)); border-bottom: 2px solid #3ddc5a"></div>
+</div>
+<div class="sc-word" style="position: absolute; left: 0; right: 0; top: 240px; display: flex; flex-direction: column; align-items: center; gap: 14px">
+<svg aria-hidden="true" width="120" height="120" viewBox="0 0 64 64"><g fill="none" stroke="#e8ecf0" stroke-width="5.5" stroke-linecap="round"><path d="M3 32h15M46 32h15"></path><path d="M26 18a16 16 0 0 0 0 28M38 18a16 16 0 0 1 0 28"></path></g><circle cx="32" cy="32" r="5.5" fill="#3ddc5a"></circle></svg>
+<div style="font-size: 60px; font-weight: 600; letter-spacing: -.015em; line-height: 1">Logix Connect</div>
+<div style="font-size: 12px; letter-spacing: .38em; font-weight: 600; color: #8b97a1">PLC TRAINING WORKSTATION</div>
+</div>
+<div style="position: absolute; left: 64px; top: 40px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #6f7b86">MainTask · MainProgram · Startup</div>
+<div style="position: absolute; left: 64px; bottom: 36px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #8b97a1">One scan, rung by rung, top to bottom · App_Ready energises and the program opens</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

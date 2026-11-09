@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Controller power-up</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@keyframes pwOk{0%,4%{fill:#2a2f35}5%,9%{fill:#e0402f}10%,13%{fill:#2a2f35}14%,18%{fill:#e0402f}19%,24%{fill:#2a2f35}25%,92%{fill:#3ddc5a}100%{fill:#2a2f35}}
+@keyframes pwIo{0%,8%{fill:#2a2f35}9%,30%{fill:#f0b429}31%,92%{fill:#3ddc5a}100%{fill:#2a2f35}}
+@keyframes pwRun{0%,46%{fill:#2a2f35}47%,92%{fill:#3ddc5a}100%{fill:#2a2f35}}
+@keyframes pwForce{0%,8%{fill:#2a2f35}9%,13%{fill:#f0b429}14%,100%{fill:#2a2f35}}
+@keyframes pwKey{0%,40%{transform:rotate(-45deg)}46%,92%{transform:rotate(45deg)}100%{transform:rotate(-45deg)}}
+@keyframes pwT1{0%,4%{opacity:0}5%,20%{opacity:1}21%,100%{opacity:0}}
+@keyframes pwT2{0%,21%{opacity:0}22%,33%{opacity:1}34%,100%{opacity:0}}
+@keyframes pwT3{0%,34%{opacity:0}35%,45%{opacity:1}46%,100%{opacity:0}}
+@keyframes pwT4{0%,46%{opacity:0}47%,92%{opacity:1}93%,100%{opacity:0}}
+@keyframes pwWord{0%,50%{opacity:0;transform:translateX(-14px)}58%,92%{opacity:1;transform:translateX(0)}100%{opacity:0}}
+@keyframes pwGlow{0%,46%{opacity:0}52%,92%{opacity:1}100%{opacity:0}}
+.pw-ok{animation:pwOk 8s steps(1) infinite}.pw-io{animation:pwIo 8s steps(1) infinite}.pw-run{animation:pwRun 8s steps(1) infinite}.pw-force{animation:pwForce 8s steps(1) infinite}
+.pw-key{transform-origin:50% 50%;transform-box:fill-box;animation:pwKey 8s cubic-bezier(.5,0,.2,1) infinite}
+.pw-t1{animation:pwT1 8s steps(1) infinite}.pw-t2{animation:pwT2 8s steps(1) infinite}.pw-t3{animation:pwT3 8s steps(1) infinite}.pw-t4{animation:pwT4 8s steps(1) infinite}
+.pw-word{animation:pwWord 8s ease-out infinite}.pw-glow{animation:pwGlow 8s ease-out infinite}
+</style>
+</helmet>
+<div style="width: 1280px; height: 720px; position: relative; overflow: hidden; background: #14181d; font-family: Inter, 'Segoe UI', sans-serif; color: #e8ecf0">
+<div class="pw-glow" style="position: absolute; left: 140px; top: 110px; width: 520px; height: 520px; background: radial-gradient(closest-side, rgba(61,220,90,.10), rgba(61,220,90,0))"></div>
+<svg aria-hidden="true" width="420" height="500" viewBox="0 0 420 500" style="position: absolute; left: 190px; top: 110px">
+<rect x="0" y="0" width="420" height="500" rx="10" fill="#2a2f36" stroke="#3a4149" stroke-width="2"></rect>
+<rect x="0" y="0" width="420" height="54" rx="10" fill="#c0392b"></rect>
+<rect x="0" y="40" width="420" height="14" fill="#c0392b"></rect>
+<text x="24" y="34" font-family="Inter, sans-serif" font-weight="700" font-size="18" fill="#ffffff">CompactLogix</text>
+<text x="396" y="34" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="14" fill="#ffe2de">1769-L33ER</text>
+<rect x="24" y="84" width="220" height="64" rx="4" fill="#0b0e11" stroke="#3a4149"></rect>
+<g font-family="JetBrains Mono, monospace" font-weight="700" font-size="34" fill="#ff7a3d">
+<text class="pw-t1" x="134" y="128" text-anchor="middle">TEST</text>
+<text class="pw-t2" x="134" y="128" text-anchor="middle">I/O·</text>
+<text class="pw-t3" x="134" y="128" text-anchor="middle">PROG</text>
+<text class="pw-t4" x="134" y="128" text-anchor="middle">RUN·</text>
+</g>
+<g font-family="Inter, sans-serif" font-weight="600" font-size="14" fill="#aeb7c0">
+<circle class="pw-run" cx="290" cy="96" r="8" fill="#2a2f35"></circle><text x="306" y="101">RUN</text>
+<circle class="pw-force" cx="290" cy="124" r="8" fill="#2a2f35"></circle><text x="306" y="129">FORCE</text>
+<circle class="pw-io" cx="290" cy="152" r="8" fill="#2a2f35"></circle><text x="306" y="157">I/O</text>
+<circle class="pw-ok" cx="290" cy="180" r="8" fill="#2a2f35"></circle><text x="306" y="185">OK</text>
+</g>
+<circle cx="134" cy="290" r="62" fill="#1d2329" stroke="#59626d" stroke-width="4"></circle>
+<text x="58" y="242" font-family="Inter, sans-serif" font-weight="700" font-size="13" fill="#aeb7c0">PROG</text>
+<text x="210" y="242" text-anchor="end" font-family="Inter, sans-serif" font-weight="700" font-size="13" fill="#aeb7c0">RUN</text>
+<text x="134" y="380" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="13" fill="#aeb7c0">REM</text>
+<rect class="pw-key" x="122" y="236" width="24" height="108" rx="8" fill="#d5dbe0"></rect>
+<g fill="#1d2329" stroke="#3a4149"><rect x="270" y="236" width="120" height="30" rx="3"></rect><rect x="270" y="276" width="120" height="30" rx="3"></rect><rect x="270" y="316" width="120" height="30" rx="3"></rect></g>
+<text x="330" y="256" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#59626d">SD</text>
+<text x="330" y="296" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#59626d">USB</text>
+<text x="330" y="336" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#59626d">ENET</text>
+<rect x="24" y="420" width="372" height="52" rx="4" fill="#1d2329"></rect>
+<text x="44" y="452" font-family="JetBrains Mono, monospace" font-size="14" fill="#aeb7c0">192.168.1.20 · Rem Run</text>
+</svg>
+<div class="pw-word" style="position: absolute; left: 700px; top: 270px; display: flex; flex-direction: column; gap: 16px">
+<svg aria-hidden="true" width="110" height="110" viewBox="0 0 64 64"><g fill="none" stroke="#e8ecf0" stroke-width="5.5" stroke-linecap="round"><path d="M3 32h15M46 32h15"></path><path d="M26 18a16 16 0 0 0 0 28M38 18a16 16 0 0 1 0 28"></path></g><circle cx="32" cy="32" r="5.5" fill="#3ddc5a"></circle></svg>
+<div style="font-size: 58px; font-weight: 600; letter-spacing: -.015em; line-height: 1">Logix Connect</div>
+<div style="font-size: 12px; letter-spacing: .38em; font-weight: 600; color: #8b97a1">PLC TRAINING WORKSTATION</div>
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #3ddc5a">Controller OK · I/O OK · Run</div>
+</div>
+<div style="position: absolute; left: 64px; bottom: 36px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #8b97a1">Self-test → I/O → PROG → the key turns to RUN · the app boots like the controller</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
