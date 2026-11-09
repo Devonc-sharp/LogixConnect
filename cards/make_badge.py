@@ -23,7 +23,7 @@ TITLE_H, SUB_H = 6.2, 4.4  # letter heights (mm)
 SUB = 'v2.0'               # '' for none
 MARGIN, GAP = 5.0, 5.0
 FRAME_IN, FRAME_W = 2.0, 0.9
-FONT = FontProperties(fname='/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf')
+FONT = FontProperties(fname=os.environ.get('BADGE_FONT') or '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf')   # BADGE_FONT=<a .ttf> to try another face
 
 
 def text_poly(s, h):
