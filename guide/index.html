@@ -1,0 +1,668 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Logix Connect Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap">
+</head><body><style>
+/* Layout: a control-cabinet reading desk. Contents rail on the left like the Controller Organizer; the lesson in a serif column; rungs drawn live on drafting-sheet cards; a small operator console docked with the lesson. */
+:root{
+  --paper:#f4f6f8; --sheet:#ffffff; --ink:#18202b; --muted:#5a6573; --rule:#d9dfe6; --grid:#eef2f6;
+  --blue:#1d4f91; --blue-soft:#e8eef7; --power:#1f9d55; --power-soft:#e3f4ea; --wire:#4a5563;
+  --amber:#c9631a; --amber-soft:#fbf1e7; --violet:#6a4cc0; --violet-soft:#f4f0fd; --green-soft:#ecf6ef;
+  --lamp-off:#c8ced6; --code:#f1f4f7;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#11161d; --sheet:#171e27; --ink:#e3e8ee; --muted:#97a3b1; --rule:#2a3440; --grid:#1c242e;
+  --blue:#7fa9e6; --blue-soft:#1b2a3f; --power:#3ccf7c; --power-soft:#14301f; --wire:#9aa6b3;
+  --amber:#e8954f; --amber-soft:#2e2116; --violet:#a891f0; --violet-soft:#231d38; --green-soft:#16271d;
+  --lamp-off:#3a4552; --code:#1d2530; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#11161d; --sheet:#171e27; --ink:#e3e8ee; --muted:#97a3b1; --rule:#2a3440; --grid:#1c242e;
+  --blue:#7fa9e6; --blue-soft:#1b2a3f; --power:#3ccf7c; --power-soft:#14301f; --wire:#9aa6b3;
+  --amber:#e8954f; --amber-soft:#2e2116; --violet:#a891f0; --violet-soft:#231d38; --green-soft:#16271d;
+  --lamp-off:#3a4552; --code:#1d2530; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--sheet)}
+code,.mono{font-family:var(--f-mono);font-size:.84em}
+code{background:var(--code);padding:.05em .3em;border-radius:3px}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.shell{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:100%}
+/* the contents rail */
+.rail{background:var(--sheet);border-right:1px solid var(--rule);position:sticky;top:env(safe-area-inset-top,0px);height:100vh;overflow:auto;padding:18px 0 40px}
+.brand{padding:0 18px 14px;border-bottom:1px solid var(--rule)}
+.brand .mark{font-family:var(--f-display);font-weight:700;font-size:23px;letter-spacing:.02em;color:var(--blue);line-height:1}
+.brand .sub{font-family:var(--f-display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.search{margin:14px 18px 6px;position:relative}
+.search input{width:100%;font:15px var(--f-body);padding:8px 10px 8px 30px;border:1px solid var(--rule);border-radius:3px;background:var(--paper);color:var(--ink)}
+.search svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--muted)}
+.toc{list-style:none;margin:6px 0 0;padding:0}
+.toc .part{font-family:var(--f-display);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:14px 18px 4px}
+.toc a,.toc span.ch{display:grid;grid-template-columns:28px 1fr;gap:4px;padding:4px 18px;font-size:14.5px;line-height:1.35;color:var(--ink);text-decoration:none}
+.toc span.ch{color:var(--muted);opacity:.7}
+.toc .n{font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:2px}
+.toc a.on{background:var(--blue-soft);color:var(--blue);font-weight:600;box-shadow:inset 3px 0 0 var(--blue)}
+.toc .hit{background:var(--amber-soft)}
+.toc .none{padding:10px 18px;color:var(--muted);font-size:14px}
+.menu-btn{display:none}
+/* the lesson */
+main{padding-block:28px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));min-width:0}
+.col{max-width:780px;margin:0 auto}
+.crumb{font-family:var(--f-display);font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:700;font-size:44px;line-height:1.02;margin:.15em 0 .5em;text-wrap:balance;letter-spacing:.005em}
+h1 .num{display:inline-block;font-family:var(--f-mono);font-weight:600;font-size:16px;letter-spacing:0;color:#fff;background:var(--blue);border-radius:2px;padding:3px 8px;vertical-align:middle;margin-right:12px;position:relative;top:-6px}
+h2{font-family:var(--f-display);font-weight:600;font-size:28px;margin:1.7em 0 .4em;color:var(--blue);text-wrap:balance}
+h3{font-family:var(--f-display);font-weight:600;font-size:19px;letter-spacing:.08em;text-transform:uppercase;margin:1.6em 0 .5em;color:var(--ink)}
+p{margin:0 0 .9em}
+.dim{color:var(--muted)}
+.box{border-radius:3px;padding:14px 18px;margin:1.1em 0;border:1px solid var(--rule)}
+.box .ttl{font-family:var(--f-display);font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.box p:last-child,.box ul:last-child{margin-bottom:0}
+.box.app{background:var(--sheet);border-left:3px solid var(--blue)}.box.app .ttl{color:var(--blue)}
+.box.try{background:var(--sheet);border-left:3px solid var(--power)}.box.try .ttl{color:var(--power)}
+.box.watch{background:var(--sheet);border-left:3px solid var(--amber)}.box.watch .ttl{color:var(--amber)}
+.box.think{background:var(--sheet);border-left:3px solid var(--power)}
+.tbl{overflow-x:auto;margin:.6em 0 1.2em}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th{font-family:var(--f-display);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:13px;text-align:left;color:var(--muted);border-bottom:2px solid var(--rule);padding:6px 10px}
+td{border-bottom:1px solid var(--rule);padding:7px 10px;vertical-align:top}
+td.m{font-family:var(--f-mono);font-size:13.5px;white-space:nowrap}
+/* the console: a painted steel operator station (RAL 7035) with 22 mm pilot devices and engraved legend plates; a physical object, so its colours do not follow the theme */
+.console{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:5;margin:1.2em 0 1.6em;background:linear-gradient(180deg,#d9dcdb 0%,#cfd2d1 55%,#c3c7c6 100%);color:#1c2126;border:1px solid #8f9596;border-radius:4px;padding:14px 22px 12px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 22px;box-shadow:inset 0 1px 0 #f1f3f2,inset 0 -1px 0 #a9aeae,0 2px 6px rgba(0,0,0,.18)}
+.console::before,.console::after{content:"";position:absolute;top:7px;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f4f5f5,#8d9394 70%);box-shadow:0 0 0 1px #7b8182}
+.console::before{left:7px}.console::after{right:7px}
+.console .plate{margin-right:auto;align-self:center;background:#15181c;color:#e9ecee;border-radius:2px;padding:5px 10px 6px;font-family:var(--f-display);font-weight:600;letter-spacing:.14em;font-size:11px;text-transform:uppercase;line-height:1.25;box-shadow:inset 0 0 0 1px #3a4047}
+.console .plate b{display:block;font-size:14px;letter-spacing:.1em;color:#fff}
+.dev{display:flex;flex-direction:column;align-items:center;gap:6px}
+.dev .lg{background:#15181c;color:#f2f4f5;font:600 10.5px var(--f-display);letter-spacing:.14em;text-transform:uppercase;padding:2px 7px 3px;border-radius:1.5px;box-shadow:inset 0 0 0 1px #3a4047;white-space:nowrap}
+/* a pilot device: chrome bezel ring, then the actuator or lens */
+.pb,.lamp{width:46px;height:46px;border-radius:50%;padding:6px;background:conic-gradient(from 210deg,#f6f7f7,#9aa0a2 18%,#e9ebeb 36%,#7f8587 55%,#dfe2e2 72%,#8b9193 88%,#f6f7f7);box-shadow:0 1px 2px rgba(0,0,0,.45),inset 0 0 0 1px #6f7577;cursor:pointer;touch-action:none;user-select:none}
+.lamp{cursor:default}
+.pb i,.lamp i{display:block;width:100%;height:100%;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.45),inset 0 2px 2px rgba(255,255,255,.22),inset 0 -3px 4px rgba(0,0,0,.28);transition:box-shadow .06s,transform .06s,background .1s}
+.pb.green i{background:radial-gradient(circle at 40% 32%,#3f9a5c,#1f7a3f 62%,#17602f)}
+.pb.red i{background:radial-gradient(circle at 40% 32%,#c94a40,#a82a23 62%,#86201b)}
+.pb.black i{background:radial-gradient(circle at 40% 32%,#4a4f55,#2a2e33 62%,#1c1f23)}
+.pb.down i,.pb.set i{transform:scale(.94);box-shadow:inset 0 0 0 1px rgba(0,0,0,.6),inset 0 4px 6px rgba(0,0,0,.5)}
+.pb.set{box-shadow:0 1px 2px rgba(0,0,0,.45),inset 0 0 0 1px #6f7577,0 0 0 2px #c98a2b}
+.lamp i{background:radial-gradient(circle at 40% 32%,#2f5a3d,#1d3c28 65%,#142a1c)}
+.lamp.on i{background:radial-gradient(circle at 42% 36%,#d9ffe6,#57d586 38%,#25a455 75%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.35),0 0 7px rgba(70,210,125,.55)}
+.key{display:flex;border-radius:2px;overflow:hidden;border:1px solid #5d6366;height:30px;margin-bottom:22px;box-shadow:inset 0 1px 0 #f1f3f2}
+.key button{font:600 12px var(--f-display);letter-spacing:.14em;text-transform:uppercase;background:#e4e6e6;color:#4a5054;border:0;padding:0 11px;cursor:pointer}
+.key button.on{background:#15181c;color:#fff}
+.scan{font-family:var(--f-mono);font-size:11.5px;color:#4a5054;min-width:92px;text-align:right;margin-bottom:28px}
+/* a rung */
+.rung{background:var(--sheet);border:1px solid var(--rule);border-radius:3px;margin:1.4em 0;overflow:hidden}
+.rung header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;padding:12px 16px 4px}
+.rung .lbl{font-family:var(--f-display);font-weight:700;letter-spacing:.14em;font-size:14px;color:var(--blue);text-transform:uppercase}
+.rung .state{font-family:var(--f-display);font-size:13px;letter-spacing:.12em;text-transform:uppercase;padding:1px 8px;border-radius:2px;background:var(--grid);color:var(--muted)}
+.rung .state.true{background:var(--power-soft);color:var(--power)}
+.rung .cmt{padding:0 16px 6px;font-size:15px;color:var(--muted);font-style:italic}
+.ladder{overflow-x:auto;background:linear-gradient(var(--grid) 1px,transparent 1px) 0 0/100% 20px,linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/20px 100%;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.ladder svg{display:block;min-width:640px;width:100%;height:auto}
+.ladder .el{cursor:pointer}
+.ladder .el:hover .hov{fill:var(--blue-soft)}
+.rt{display:flex;align-items:center;gap:8px;padding:8px 12px 8px 16px;background:var(--code)}
+.rt code{background:none;padding:0;font-size:13.5px;overflow-x:auto;white-space:nowrap;flex:1;min-width:0}
+.btn{font:600 13px var(--f-display);letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--rule);background:var(--sheet);color:var(--ink);border-radius:3px;padding:6px 11px;cursor:pointer}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.predict{margin:12px 16px;border:1px solid var(--rule);border-left:3px solid var(--violet);background:var(--sheet);border-radius:3px;padding:12px 14px}
+.predict .ttl{font-family:var(--f-display);font-weight:700;letter-spacing:.14em;font-size:14px;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.predict .opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.predict .ans{margin-top:10px;padding-top:10px;border-top:1px solid var(--rule)}
+.verdict{font-family:var(--f-display);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:15px}
+.verdict.right{color:var(--power)}.verdict.wrong{color:var(--amber)}
+details.how{margin:0 16px 14px;border-top:1px solid var(--rule)}
+details.how summary{cursor:pointer;list-style:none;padding:10px 0;font-family:var(--f-display);font-weight:700;letter-spacing:.14em;font-size:14px;text-transform:uppercase;color:var(--blue)}
+details.how summary::before{content:"▸ ";}
+details.how[open] summary::before{content:"▾ ";}
+details.how .body{font-size:15.5px}
+details.how ol{padding-left:1.4em;margin:.2em 0 .6em}
+details.how li{margin:.18em 0}
+details.how .path{font-family:var(--f-display);font-weight:600;letter-spacing:.06em;color:var(--blue);font-size:14px;margin-top:4px}
+details.how .sub{font-family:var(--f-display);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:13px;color:var(--muted);margin:.8em 0 .2em}
+details.how i.dim{font-style:normal;font-family:var(--f-display);letter-spacing:.04em}
+/* Run it checklist */
+.checks{list-style:none;padding:0;margin:.4em 0 0}
+.checks li{display:grid;grid-template-columns:26px 1fr;gap:6px;padding:4px 0}
+.tick{width:18px;height:18px;border-radius:2px;border:1.5px solid var(--wire);margin-top:3px;display:grid;place-items:center;font-size:12px;color:#fff;transition:background .2s}
+.checks li.done .tick{background:var(--power);border-color:var(--power)}
+.checks li.done .txt{color:var(--power)}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:3em;border-top:1px solid var(--rule);padding-top:16px;flex-wrap:wrap}
+.pager .p{font-family:var(--f-display);font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.pager .p b{display:block;font-size:18px;letter-spacing:.02em;text-transform:none;color:var(--ink)}
+mark{background:var(--amber-soft);color:inherit;box-shadow:0 0 0 2px var(--amber-soft)}
+.theme{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:20}
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .rail{position:fixed;inset:0 auto 0 0;width:min(320px,86vw);transform:translateX(-102%);transition:transform .2s;z-index:30;box-shadow:0 0 30px rgba(0,0,0,.25);padding-top:calc(18px + env(safe-area-inset-top,0px))}
+  .rail.open{transform:none}
+  .menu-btn{display:inline-flex;margin-bottom:10px}
+  h1{font-size:34px}
+  .console{gap:10px 14px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ---- the rest of the book's furniture ---- */
+.col{max-width:820px}
+#lesson.loading{opacity:.45}
+.prose img{max-width:100%;height:auto;display:block;border:1px solid var(--rule);border-radius:2px;background:#fff}
+figure{margin:1em 0 1.5em}
+figcaption{font-size:14.5px;color:var(--muted);margin-top:6px;line-height:1.45}
+figure.narrow img,figure.phone img{max-height:620px;width:auto}
+figure.third img{width:min(100%,380px)}
+figure.diagram{background:#fff;border:1px solid var(--rule);border-radius:3px;padding:10px;overflow-x:auto}
+figure.diagram svg{display:block;width:100%;min-width:520px;height:auto}
+figure.diagram figcaption{color:#5a6573}
+.grid{display:grid;gap:14px;margin:1em 0 1.5em;align-items:start;grid-template-columns:repeat(2,1fr)}
+.grid figure{margin:0}
+.grid.g3{grid-template-columns:repeat(3,1fr)}.grid.g4{grid-template-columns:repeat(4,1fr)}.grid.g5{grid-template-columns:repeat(5,1fr)}
+.kbd,td.kbdcell{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);white-space:nowrap}
+.kbd{border:1px solid var(--rule);border-radius:3px;padding:0 5px;background:var(--sheet)}
+pre.rt,pre.listing{font-family:var(--f-mono);font-size:13px;line-height:1.5;background:var(--code);border-left:3px solid var(--blue);padding:10px 14px;margin:.4em 0 1.1em;white-space:pre-wrap;word-break:break-word;border-radius:0 3px 3px 0;display:block}
+pre.listing{font-size:12.5px;max-height:560px;overflow:auto}
+pre.listing .n{color:var(--muted);user-select:none}
+.rtcap{font-style:italic;font-size:14.5px;color:var(--muted);margin-bottom:2px}
+ul.menu li,ul.layout li{margin:.45em 0}
+ul.layout .note{color:var(--muted);font-style:italic}
+.prose ul,.prose ol{padding-left:1.3em;margin:0 0 .9em}
+.prose li{margin:.2em 0}
+.prose a{color:var(--blue)}
+.prose figcaption code,.prose p code,.prose li code,.prose td code,.prose dd code{overflow-wrap:anywhere}
+.part h3{margin-top:2em;padding-top:1em;border-top:1px solid var(--rule);text-transform:none;letter-spacing:.02em;font-size:22px;color:var(--blue)}
+.box.note{background:var(--sheet);border-left:3px solid var(--wire)}
+dl.gloss dt{font-weight:600;margin-top:.7em}
+dl.gloss dt.gl{font-family:var(--f-display);font-size:30px;color:var(--blue);margin-top:1em;border-bottom:1px solid var(--rule)}
+dl.gloss dd{margin:0 0 0 1.2em;font-size:16px}
+table.log td{height:2.4em}
+/* the controller strip on chapters without an operator station */
+#strip{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:6}
+#strip .console{position:relative;top:0}
+.runbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;background:var(--sheet);border:1px solid var(--rule);border-left:3px solid var(--power);border-radius:3px;padding:8px 14px;margin:1em 0 1.4em}
+.runbar .rb-t{font-family:var(--f-display);font-weight:700;letter-spacing:.14em;font-size:14px;text-transform:uppercase}
+.runbar .key{margin:0;height:28px}.runbar .scan{margin:0;color:var(--muted);text-align:left;min-width:80px}
+.runbar .rb-h{flex-basis:100%;font-size:14px;color:var(--muted);line-height:1.35}
+.rung .note{font-size:13px;color:var(--amber);font-style:italic}
+.vals{display:flex;flex-wrap:wrap;gap:8px 14px;padding:10px 16px;border-bottom:1px solid var(--rule);background:var(--sheet)}
+.vals[hidden]{display:none}
+.vals label{display:flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:12.5px}
+.vals input{width:92px;font:13px var(--f-mono);padding:4px 6px;border:1px solid var(--rule);border-radius:3px;background:var(--paper);color:var(--ink)}
+.toc a small{display:block;font-size:12.5px;color:var(--muted);font-weight:400;line-height:1.3;margin-top:2px}
+.pager a.p{text-decoration:none}.pager a.p:hover b{color:var(--blue)}
+@media (max-width:700px){.grid.g3,.grid.g4,.grid.g5{grid-template-columns:repeat(2,1fr)} #strip{position:static}}
+/* the contents rail folds away: « in its header, ☰ Contents brings it back (remembered on this device) */
+.brand{position:relative;padding-right:52px}
+.railhide{position:absolute;right:12px;top:-2px;width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--rule);border-radius:3px;background:var(--paper);color:var(--muted);font:600 18px/1 var(--f-display);cursor:pointer}
+.railhide:hover{color:var(--blue);border-color:var(--blue)}
+@media (min-width:901px){
+  body.railoff .shell{grid-template-columns:minmax(0,1fr)}
+  body.railoff .rail{display:none}
+  body.railoff .menu-btn{display:inline-flex;margin-bottom:10px}
+  body.railoff .col{max-width:900px;margin-left:auto;margin-right:auto}
+}
+/* the link to Logix Connect: the chip, the progress card, the rung badges, the marks in the contents */
+.lcchip{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(58px + env(safe-area-inset-bottom,0px));z-index:20;text-transform:none;letter-spacing:.02em;font-size:13px;max-width:min(560px,calc(100vw - 28px));overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.lcchip[hidden]{display:none}
+.lcchip .d{color:var(--muted)}.lcchip.on{color:var(--ink);border-color:var(--power)}.lcchip.on .d{color:var(--power)}
+.lccard{border:1px solid var(--rule);border-left:3px solid var(--wire);border-radius:3px;background:var(--sheet);padding:10px 16px 12px;margin:1em 0 1.2em}
+.lccard.live{border-left-color:var(--power)}
+.lchd{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-bottom:4px}
+.lctt{font-family:var(--f-display);font-weight:700;letter-spacing:.14em;font-size:14px;text-transform:uppercase}
+.lcp{font-weight:600}
+.lcs{font-size:13px;color:var(--muted)}.lcs.on{color:var(--power);font-weight:600}
+.lcf{margin-left:auto;font-size:13px;color:var(--muted);display:flex;gap:5px;align-items:center;cursor:pointer}
+.lcdim{color:var(--muted);font-size:15px;margin:.3em 0}
+.lcnote{font-size:14.5px;color:var(--amber);margin:.3em 0}
+.lcl{border-top:1px solid var(--rule);padding-top:8px;margin-top:8px}.lcl:first-of-type{border-top:0;margin-top:0}
+.lcl-h{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.lct{font-size:12px;font-family:var(--f-display);letter-spacing:.1em;text-transform:uppercase;padding:1px 7px;border-radius:2px;background:var(--grid);color:var(--muted)}
+.lct.done{background:var(--power);color:#fff}.lct.cur{background:var(--blue);color:#fff}
+.lccard .sub{font-family:var(--f-display);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:8px 0 2px}
+ul.lcc{list-style:none;padding:0;margin:0 0 4px}
+ul.lcc li{font-size:15px;margin:2px 0;display:flex;gap:7px;align-items:baseline}
+ul.lcc li .mk{flex:none;width:16px;color:var(--muted);font-weight:700}
+ul.lcc li.ok{color:var(--muted)}ul.lcc li.ok .mk{color:var(--power)}
+.lcfix{font-size:12.5px;color:var(--blue);white-space:nowrap}
+.lcr{font-size:15px;margin:.5em 0}
+.lcgo{margin-top:6px}
+.rung .lcb{font-size:12.5px;font-family:var(--f-display);letter-spacing:.08em;padding:1px 8px;border-radius:2px;border:1px solid var(--rule);color:var(--muted)}
+.rung .lcb.w{border-color:var(--power);color:var(--power)}
+.rung .lcb.p{background:var(--power);border-color:var(--power);color:#fff}
+.rung .lcb.nx{border-color:var(--blue);color:var(--blue)}
+.rung .lcb.aw{border-color:var(--amber);color:var(--amber)}
+.rung .lcb[hidden],.lcadd[hidden]{display:none}
+.rung .rt .lcadd{margin-left:6px;border-color:var(--power);color:var(--power)}
+.rung.flash{animation:lcflash 1.6s ease-out}
+@keyframes lcflash{0%{box-shadow:0 0 0 4px var(--blue)}100%{box-shadow:0 0 0 0 transparent}}
+.toc a{grid-template-columns:28px 1fr auto}
+.toc a .lcm{padding-left:6px;font-size:12px;color:var(--muted);flex:none}
+.toc a .lcm.done{color:var(--power)}.toc a .lcm.cur{color:var(--blue)}.toc a .lcm.some{color:var(--amber)}
+</style>
+
+<div class="shell">
+  <nav class="rail" id="rail" aria-label="Contents">
+    <div class="brand"><button class="railhide" id="railHide" type="button" aria-label="Hide the contents" title="Hide the contents">«</button><div class="mark">LOGIX CONNECT</div><div class="sub">The Programmer’s Guide · v2.02</div></div>
+    <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg><input id="q" type="search" placeholder="Search the guide" autocomplete="off" aria-label="Search the guide"></div>
+    <ul class="toc" id="toc"></ul>
+  </nav>
+  <main><div class="col" id="lesson"></div></main>
+</div>
+<button class="btn theme" id="themeBtn" type="button" aria-label="Switch light or dark">◐ Theme</button>
+<script>
+/* Logix Connect: the interactive Programmer's Guide.
+   Chapters load on demand (ch/<id>.json). Every rung is drawn here and scanned by a small controller: bits, one-shots, timers, counters,
+   compares, moves, math, shift registers and FIFOs. A rung that needs more than that (messages, strings, a computed expression) is drawn but not run. */
+const TOC = [{"part": "Part I — Getting started"}, {"id": "ch01", "n": 1, "t": "What Logix Connect is", "r": 0}, {"id": "ch02", "n": 2, "t": "The workbench: a tour", "r": 0}, {"id": "ch03", "n": 3, "t": "Projects: new, save, open, download", "r": 0}, {"part": "Part II — Ladder logic from zero"}, {"id": "ch04", "n": 4, "t": "How a controller thinks: the scan and the rung", "r": 0}, {"id": "ch05", "n": 5, "t": "Tags, data types and I/O addresses", "r": 0}, {"id": "ch06", "n": 6, "t": "Bit instructions", "r": 0}, {"id": "ch07", "n": 7, "t": "Timers and counters", "r": 0}, {"id": "ch08", "n": 8, "t": "Compare, move and math", "r": 0}, {"id": "ch09", "n": 9, "t": "Routines, programs and the main routine", "r": 0}, {"id": "ch10", "n": 10, "t": "Shift registers: tracking parts down a line", "r": 0}, {"id": "ch11", "n": 11, "t": "Reading the machine while it runs", "r": 0}, {"part": "Part III — The sandbox and its parts"}, {"id": "ch12", "n": 12, "t": "The sandbox floor", "r": 0}, {"id": "ch13", "n": 13, "t": "Parts catalogue", "r": 0}, {"id": "ch14", "n": 14, "t": "Operating the Process HMI", "r": 0}, {"part": "Part IV — Building the bottle line from ground zero"}, {"id": "ch15", "n": 15, "t": "The line we are going to build", "r": 0}, {"id": "ch16", "n": 16, "t": "Lesson 1 — Lay out the machine", "r": 0}, {"id": "ch17", "n": 17, "t": "Lesson 2 — Name the I/O: the tag list", "r": 0}, {"id": "ch18", "n": 18, "t": "Lesson 3 — Step 1: the run circuit", "r": 3}, {"id": "ch19", "n": 19, "t": "Lesson 4 — Step 2: the dwell timer and the feeder", "r": 1}, {"id": "ch20", "n": 20, "t": "Lesson 5 — Step 3: index one pitch", "r": 4}, {"id": "ch21", "n": 21, "t": "Lesson 6 — Step 4: the shift registers", "r": 1}, {"id": "ch22", "n": 22, "t": "Lesson 7 — Step 5: filling", "r": 5}, {"id": "ch23", "n": 23, "t": "Lesson 8 — Step 6: the reservoir and the stack light", "r": 5}, {"id": "ch24", "n": 24, "t": "Lesson 9 — Step 7: capping and the cap feeder", "r": 8}, {"id": "ch25", "n": 25, "t": "Lesson 10 — Step 8: the gates, the divert conveyor, the boxes and the shredder", "r": 5}, {"id": "ch26", "n": 26, "t": "Lesson 11 — Step 9: the displays, the preset and Enter", "r": 6}, {"id": "ch27", "n": 27, "t": "Lesson 12 — Steps 10, 14 and 15: the labelers and the camera", "r": 28}, {"id": "ch28", "n": 28, "t": "Lesson 13 — Step 11: alarms and machine faults", "r": 19}, {"id": "ch29", "n": 29, "t": "Lesson 14 — Step 12: the case packer, both sizes, and the VFD", "r": 14}, {"id": "ch30", "n": 30, "t": "Lesson 15 — Step 13: the mix kitchen", "r": 23}, {"id": "ch31", "n": 31, "t": "Commissioning: the whole line, start to finish", "r": 0}, {"part": "Part V — The graded levels"}, {"id": "ch32", "n": 32, "t": "The graded levels: the machine, the bins and the score", "r": 0}, {"id": "ch33", "n": 33, "t": "Level 1 — Height sort", "r": 16}, {"id": "ch34", "n": 34, "t": "Level 2 — Fill by label", "r": 20}, {"id": "ch35", "n": 35, "t": "Level 3 — Color sort", "r": 20}, {"id": "ch36", "n": 36, "t": "Level 4 — Two on the line", "r": 43}, {"id": "ch37", "n": 37, "t": "Level 5 — Full sort", "r": 53}, {"id": "ch38", "n": 38, "t": "Level 6 — Pack it", "r": 39}, {"id": "ch39", "n": 39, "t": "Level 7 — Batch Mix", "r": 24}, {"id": "ch40", "n": 40, "t": "Level 8 — Vision check", "r": 16}, {"id": "ch41", "n": 41, "t": "Level 9 — Changeover", "r": 22}, {"id": "ch42", "n": 42, "t": "Level 10 — Servo pick", "r": 15}, {"id": "ch43", "n": 43, "t": "Level 11 — Date code", "r": 24}, {"id": "ch44", "n": 44, "t": "Level 12 — Kitchen changeover", "r": 31}, {"id": "ch45", "n": 45, "t": "Level 13 — Label it", "r": 17}, {"id": "ch46", "n": 46, "t": "Level 14 — Paint line", "r": 61}, {"id": "ch47", "n": 47, "t": "Level 15 — Code and verify", "r": 29}, {"id": "ch48", "n": 48, "t": "Level 16 — Fail-safe reject", "r": 23}, {"id": "ch49", "n": 49, "t": "Level 17 — Checkweigher", "r": 22}, {"id": "ch50", "n": 50, "t": "Level 18 — Line balance", "r": 25}, {"id": "ch51", "n": 51, "t": "Level 19 — PackML states", "r": 48}, {"id": "ch52", "n": 52, "t": "Level 20 — Socket to the camera", "r": 16}, {"id": "ch53", "n": 53, "t": "Level 21 — Parse the reply", "r": 23}, {"id": "ch54", "n": 54, "t": "Level 22 — Bulk fill", "r": 57}, {"part": "Part VI — Beyond the bottle line"}, {"id": "ch55", "n": 55, "t": "Save, share and replay", "r": 0}, {"id": "ch56", "n": 56, "t": "A servo axis on a Festo FHPP drive", "r": 7}, {"id": "ch57", "n": 57, "t": "Classic scenes: the elevator", "r": 41}, {"id": "ch58", "n": 58, "t": "Classic scenes: the traffic intersection", "r": 45}, {"id": "ch59", "n": 59, "t": "The sample sorter, programmed", "r": 36}, {"id": "ch60", "n": 60, "t": "Classic scenes: doors and gates", "r": 70}, {"id": "ch61", "n": 61, "t": "Classic scene: the car wash", "r": 103}, {"id": "ch62", "n": 62, "t": "Classic scene: the inspection line", "r": 35}, {"id": "ch63", "n": 63, "t": "Classic scene: the air compressor room", "r": 46}, {"id": "ch64", "n": 64, "t": "Classic scene: the material silo", "r": 65}, {"id": "ch65", "n": 65, "t": "The Card Sort Cell", "r": 0}, {"id": "ch66", "n": 66, "t": "Where to go next", "r": 0}, {"part": "Appendices"}, {"id": "appA", "n": "A", "t": "The bottle line tag list", "r": 0}, {"id": "appB", "n": "B", "t": "The complete program", "r": 0}, {"id": "appC", "n": "C", "t": "The register bit map", "r": 0}, {"id": "appD", "n": "D", "t": "Sensor reference", "r": 0}, {"id": "appE", "n": "E", "t": "Keyboard shortcuts", "r": 0}, {"id": "appF", "n": "F", "t": "Glossary", "r": 0}, {"id": "appG", "n": "G", "t": "Instruction set", "r": 0}, {"id": "appH", "n": "H", "t": "Walkthrough log", "r": 0}];
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------------- parsing ---------------- */
+function splitArgs(s){ const out=[]; let d=0, cur=''; for(const ch of s){ if(ch==='('||ch==='[') d++; if(ch===')'||ch===']') d--; if(ch===','&&d===0){ out.push(cur.trim()); cur=''; } else cur+=ch; } if(cur.trim()||out.length) out.push(cur.trim()); return out; }
+function parse(text){
+  const s = text.trim().replace(/;$/,''); let i = 0;
+  function seq(stop){
+    const nodes = [];
+    while(i < s.length){
+      const c = s[i];
+      if(stop.includes(c)) return nodes;
+      if(c === '['){ i++; const paths=[seq(',]')]; while(s[i]===','){ i++; paths.push(seq(',]')); } i++; nodes.push({k:'B',paths}); continue; }
+      const m = /^([A-Za-z_]\w*)\(/.exec(s.slice(i));
+      if(!m){ i++; continue; }
+      i += m[0].length; let d = 1, st = i;
+      while(i < s.length && d){ if(s[i]==='(') d++; else if(s[i]===')') d--; i++; }
+      nodes.push({k:'I', op:m[1].toUpperCase(), args:splitArgs(s.slice(st,i-1))});
+    }
+    return nodes;
+  }
+  return seq('');
+}
+const COND = new Set(['XIC','XIO','ONS','EQU','NEQ','LES','LEQ','GRT','GEQ','LIM','MEQ']);
+const BITOUT = new Set(['OTE','OTL','OTU']);
+const RUNS = new Set(['XIC','XIO','ONS','EQU','NEQ','LES','LEQ','GRT','GEQ','LIM','MEQ','OTE','OTL','OTU','TON','TOF','RTO','CTU','CTD','RES','MOV','CLR','ADD','SUB','MUL','DIV','JSR','NOP','BSL','BSR','FFL','FFU','SCP','OR','AND','XOR']);
+const isCond = n => n.k==='I' && COND.has(n.op);
+function walk(nodes, f){ for(const n of nodes){ if(n.k==='I') f(n); else n.paths.forEach(p => walk(p, f)); } }
+
+/* ---------------- the controller ---------------- */
+const MEM = {};                       // one memory per program key
+let mode = 'run', scans = 0, lastT = performance.now();
+const mem = key => MEM[key] || (MEM[key] = {});
+const isNum = a => /^-?\d+(\.\d+)?$/.test(a);
+function rd(M, a){ if(isNum(a)) return +a; const v = M[a]; return v === undefined ? 0 : v; }
+function wr(M, a, v){ M[a] = v; }
+function bitKey(base, n){ const m = /^(.*)\[(\d+)\]$/.exec(base); const w = m ? +m[2] : 0, root = m ? m[1] : base; return `${root}[${w + (n >> 5)}].${n & 31}`; }
+function evalI(M, n, p, dt){
+  const a = n.args, op = n.op, g = i => rd(M, a[i]);
+  switch(op){
+    case 'XIC': return p && !!rd(M, a[0]);
+    case 'XIO': return p && !rd(M, a[0]);
+    case 'ONS': { const was = !!M[a[0]]; M[a[0]] = p ? 1 : 0; return p && !was; }
+    case 'EQU': return p && g(0) === g(1);
+    case 'NEQ': return p && g(0) !== g(1);
+    case 'LES': return p && g(0) < g(1);
+    case 'LEQ': return p && g(0) <= g(1);
+    case 'GRT': return p && g(0) > g(1);
+    case 'GEQ': return p && g(0) >= g(1);
+    case 'LIM': return p && (g(0) <= g(2) ? (g(0) <= g(1) && g(1) <= g(2)) : (g(1) >= g(0) || g(1) <= g(2)));
+    case 'MEQ': return p && ((g(0) & g(1)) === (g(2) & g(1)));
+    case 'OTE': wr(M, a[0], p ? 1 : 0); return p;
+    case 'OTL': if(p) wr(M, a[0], 1); return p;
+    case 'OTU': if(p) wr(M, a[0], 0); return p;
+    case 'TON': case 'RTO': { const t = a[0]; if(M[t+'.PRE'] === undefined || !M[t+'.set']){ M[t+'.PRE'] = +a[1] || 0; M[t+'.set'] = 1; }
+      if(p){ M[t+'.EN'] = 1; if(!M[t+'.DN']){ M[t+'.ACC'] = Math.min(M[t+'.PRE'], (M[t+'.ACC']||0) + dt); M[t+'.TT'] = 1; if(M[t+'.ACC'] >= M[t+'.PRE']){ M[t+'.DN'] = 1; M[t+'.TT'] = 0; } } }
+      else { M[t+'.EN'] = 0; M[t+'.TT'] = 0; if(op === 'TON'){ M[t+'.ACC'] = 0; M[t+'.DN'] = 0; } }
+      return p; }
+    case 'TOF': { const t = a[0]; if(!M[t+'.set']){ M[t+'.PRE'] = +a[1] || 0; M[t+'.set'] = 1; }
+      if(p){ M[t+'.EN'] = 1; M[t+'.DN'] = 1; M[t+'.ACC'] = 0; M[t+'.TT'] = 0; }
+      else { M[t+'.EN'] = 0; if(M[t+'.DN']){ M[t+'.ACC'] = (M[t+'.ACC']||0) + dt; M[t+'.TT'] = 1; if(M[t+'.ACC'] >= M[t+'.PRE']){ M[t+'.DN'] = 0; M[t+'.TT'] = 0; M[t+'.ACC'] = M[t+'.PRE']; } } }
+      return p; }
+    case 'CTU': case 'CTD': { const c = a[0]; if(!M[c+'.set']){ M[c+'.PRE'] = isNum(a[1]) ? +a[1] : 0; M[c+'.set'] = 1; } if(!isNum(a[1])) M[c+'.PRE'] = rd(M, a[1]);
+      const was = !!M[c+'.was']; M[c+'.was'] = p ? 1 : 0; if(p && !was) M[c+'.ACC'] = (M[c+'.ACC']||0) + (op === 'CTU' ? 1 : -1);
+      M[c+'.CU'] = op==='CTU' && p ? 1 : 0; M[c+'.DN'] = (M[c+'.ACC']||0) >= M[c+'.PRE'] ? 1 : 0; return p; }
+    case 'RES': if(p){ const t = a[0]; M[t+'.ACC'] = 0; M[t+'.DN'] = 0; M[t+'.TT'] = 0; M[t+'.EN'] = 0; M[t+'.POS'] = 0; M[t+'.EM'] = 1; } return p;
+    case 'MOV': if(p) wr(M, a[1], g(0)); return p;
+    case 'CLR': if(p) wr(M, a[0], 0); return p;
+    case 'ADD': if(p) wr(M, a[2], g(0) + g(1)); return p;
+    case 'SUB': if(p) wr(M, a[2], g(0) - g(1)); return p;
+    case 'MUL': if(p) wr(M, a[2], g(0) * g(1)); return p;
+    case 'DIV': if(p && g(1) !== 0) wr(M, a[2], Math.trunc(g(0) / g(1))); return p;
+    case 'OR': if(p) wr(M, a[2], g(0) | g(1)); return p;
+    case 'AND': if(p) wr(M, a[2], g(0) & g(1)); return p;
+    case 'XOR': if(p) wr(M, a[2], g(0) ^ g(1)); return p;
+    case 'SCP': if(p){ const d = g(2) - g(1); wr(M, a[5], d ? +(((g(0) - g(1)) * (g(4) - g(3)) / d + g(3)).toFixed(2)) : 0); } return p;
+    case 'BSL': case 'BSR': { const ctl = a[1], len = +a[3] || 32, was = !!M[ctl+'.was']; M[ctl+'.was'] = p ? 1 : 0;
+      if(p && !was){ if(op === 'BSL'){ M[ctl+'.UL'] = rd(M, bitKey(a[0], len-1)); for(let b = len-1; b > 0; b--) M[bitKey(a[0], b)] = rd(M, bitKey(a[0], b-1)); M[bitKey(a[0], 0)] = rd(M, a[2]) ? 1 : 0; }
+        else { M[ctl+'.UL'] = rd(M, bitKey(a[0], 0)); for(let b = 0; b < len-1; b++) M[bitKey(a[0], b)] = rd(M, bitKey(a[0], b+1)); M[bitKey(a[0], len-1)] = rd(M, a[2]) ? 1 : 0; } }
+      M[ctl+'.EN'] = p ? 1 : 0; return p; }
+    case 'FFL': case 'FFU': { const ctl = a[2], arr = (op==='FFL' ? a[1] : a[0]).replace(/\[\d+\]$/,''), len = +a[3] || 8, was = !!M[ctl+(op==='FFL'?'.wasL':'.wasU')]; M[ctl+(op==='FFL'?'.wasL':'.wasU')] = p ? 1 : 0;
+      let pos = M[ctl+'.POS'] || 0;
+      if(p && !was){ if(op === 'FFL'){ if(pos < len){ M[`${arr}[${pos}]`] = g(0); pos++; } } else if(pos > 0){ wr(M, a[1], rd(M, `${arr}[0]`)); for(let k = 0; k < pos-1; k++) M[`${arr}[${k}]`] = rd(M, `${arr}[${k+1}]`); M[`${arr}[${pos-1}]`] = 0; pos--; } }
+      M[ctl+'.POS'] = pos; M[ctl+'.EM'] = pos === 0 ? 1 : 0; M[ctl+'.DN'] = pos >= len ? 1 : 0; return p; }
+    default: return p;
+  }
+}
+function evalSeq(M, nodes, p, dt){
+  for(const n of nodes){
+    n.pin = p;
+    if(n.k==='B'){ let any = false; for(const path of n.paths){ if(evalSeq(M, path, p, dt)) any = true; } p = any; }
+    else p = evalI(M, n, p, dt);
+    n.pout = p;
+  }
+  return p;
+}
+
+/* ---------------- drawing ---------------- */
+const CW = 112, BW = 168, ROWH = 116, TOP = 64;
+let TAGS = {};                         // key -> tag name -> {type, alias, desc}
+function meta(key, a){ const base = a.split(/[.\[]/)[0]; return (TAGS[key] || {})[base] || {}; }
+function isBitNode(n){ return n.op==='XIC' || n.op==='XIO' || BITOUT.has(n.op); }
+function measure(nodes){
+  let w = 0, h = ROWH;
+  for(const n of nodes){
+    if(n.k==='B'){ let bw=0, bh=0; for(const p of n.paths){ const m=measure(p); bw=Math.max(bw,m.w); bh+=m.h; } n.w = bw + 24; n.h = bh; }
+    else if(isBitNode(n)){ n.w = CW; n.h = ROWH; }
+    else { n.w = BW; n.h = Math.max(ROWH, 44 + 15 * Math.max(1, n.args.length) + 30); }
+    w += n.w; h = Math.max(h, n.h);
+  }
+  return {w, h};
+}
+function wrapDesc(d, n){ const words=(d||'').split(/\s+/).filter(Boolean); const lines=['']; for(const w of words){ if((lines[lines.length-1]+' '+w).trim().length > n){ if(lines.length===2){ lines[1]=lines[1].replace(/\s*\S*$/,'')+'…'; break; } lines.push(w); } else lines[lines.length-1]=(lines[lines.length-1]+' '+w).trim(); } return lines.filter(Boolean); }
+const col = p => p ? 'var(--power)' : 'var(--wire)';
+const clip = (s, n) => s.length > n ? s.slice(0, n-1) + '…' : s;
+function fmt(v){ return Number.isInteger(v) ? String(v) : (+v).toFixed(1); }
+function drawBit(R, n, x, y, out){
+  const tag = n.args[0], m = meta(R.key, tag), mid = x + n.w/2, yy = y + TOP, M = mem(R.key);
+  const lead = col(n.pin), after = col(n.pout), live = R.live;
+  out.push(`<g class="el" data-tag="${esc(tag)}" tabindex="0" role="button" aria-label="${n.op} ${esc(tag)}, click to toggle"><rect class="hov" x="${x+4}" y="${y+4}" width="${n.w-8}" height="${ROWH-8}" rx="3" fill="transparent"/>`);
+  wrapDesc(m.desc, 20).forEach((l,k) => out.push(`<text x="${mid}" y="${y+16+k*12}" text-anchor="middle" font-family="Source Serif 4, Georgia, serif" font-size="10.5" fill="var(--muted)">${esc(l)}</text>`));
+  out.push(`<text x="${mid}" y="${yy-14}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="${tag.length > 15 ? 9.5 : 12}" font-weight="600" fill="var(--ink)">${esc(clip(tag, 22))}</text>`);
+  if(m.alias && !/[.\[]/.test(tag)) out.push(`<text x="${mid}" y="${yy+30}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" fill="var(--muted)">&lt;${esc(m.alias)}&gt;</text>`);
+  const on = live && !!rd(M, tag);
+  if(isCond(n)){
+    const closed = live && (n.op==='XIC' ? on : !rd(M, tag)), c = closed ? 'var(--power)' : 'var(--wire)';
+    out.push(`<line x1="${x}" y1="${yy}" x2="${mid-9}" y2="${yy}" stroke="${lead}" stroke-width="2.4"/><line x1="${mid+9}" y1="${yy}" x2="${x+n.w}" y2="${yy}" stroke="${after}" stroke-width="2.4"/>`);
+    if(closed) out.push(`<rect x="${mid-7}" y="${yy-11}" width="14" height="22" fill="var(--power-soft)"/>`);
+    out.push(`<line x1="${mid-9}" y1="${yy-13}" x2="${mid-9}" y2="${yy+13}" stroke="${c}" stroke-width="2.6"/><line x1="${mid+9}" y1="${yy-13}" x2="${mid+9}" y2="${yy+13}" stroke="${c}" stroke-width="2.6"/>`);
+    if(n.op==='XIO') out.push(`<line x1="${mid-12}" y1="${yy+12}" x2="${mid+12}" y2="${yy-12}" stroke="${c}" stroke-width="2.2"/>`);
+  } else {
+    const c = on ? 'var(--power)' : 'var(--wire)';
+    out.push(`<line x1="${x}" y1="${yy}" x2="${mid-14}" y2="${yy}" stroke="${lead}" stroke-width="2.4"/><line x1="${mid+14}" y1="${yy}" x2="${x+n.w}" y2="${yy}" stroke="${lead}" stroke-width="2.4"/>`);
+    if(on) out.push(`<circle cx="${mid}" cy="${yy}" r="6.5" fill="var(--power-soft)"/>`);
+    out.push(`<path d="M${mid-8},${yy-14} Q${mid-17},${yy} ${mid-8},${yy+14} M${mid+8},${yy-14} Q${mid+17},${yy} ${mid+8},${yy+14}" fill="none" stroke="${c}" stroke-width="2.6"/>`);
+    const letter = n.op==='OTL' ? 'L' : n.op==='OTU' ? 'U' : '';
+    if(letter) out.push(`<text x="${mid}" y="${yy+4.5}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" font-weight="600" fill="${c}">${letter}</text>`);
+  }
+  out.push(`<text x="${mid}" y="${yy+48}" text-anchor="middle" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-size="11" letter-spacing="1.2" fill="var(--muted)">${n.op}</text></g>`);
+}
+function drawBox(R, n, x, y, out){
+  const yy = y + TOP, M = mem(R.key), bx = x + 8, bw = n.w - 16, lines = n.args.length ? n.args : [''], bh = 24 + 15 * lines.length + 6, by = yy - 16;
+  const cond = isCond(n), lit = R.live && (cond ? n.pout : n.pin), c = lit ? 'var(--power)' : 'var(--wire)';
+  out.push(`<g class="el box" data-box="1" tabindex="0" role="button" aria-label="${n.op}, click to set its values"><line x1="${x}" y1="${yy}" x2="${bx}" y2="${yy}" stroke="${col(n.pin)}" stroke-width="2.4"/><line x1="${bx+bw}" y1="${yy}" x2="${x+n.w}" y2="${yy}" stroke="${col(n.pout)}" stroke-width="2.4"/>`);
+  out.push(`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="2" fill="${lit ? 'var(--power-soft)' : 'var(--sheet)'}" stroke="${c}" stroke-width="1.6"/>`);
+  out.push(`<text x="${bx+7}" y="${by+15}" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-size="12.5" font-weight="700" letter-spacing="1.2" fill="var(--ink)">${n.op}</text>`);
+  out.push(`<line x1="${bx}" y1="${by+20}" x2="${bx+bw}" y2="${by+20}" stroke="${c}" stroke-width="1"/>`);
+  const TM = {TON:1,TOF:1,RTO:1,CTU:1,CTD:1};
+  lines.forEach((a, k) => {
+    let right = '';
+    if(R.live && R.runs){ if(TM[n.op] && k === 1) right = fmt(rd(M, n.args[0]+'.PRE') || +a || 0); else if(TM[n.op] && k === 2) right = fmt(rd(M, n.args[0]+'.ACC')); else if(!isNum(a) && a && !TM[n.op] && n.op !== 'JSR' && !/^(BSL|BSR|FFL|FFU|RES|ONS)$/.test(n.op)) right = fmt(rd(M, a)); }
+    const label = TM[n.op] && k === 1 ? 'PRE' : TM[n.op] && k === 2 ? 'ACC' : clip(a, right ? 15 : 22);
+    out.push(`<text x="${bx+7}" y="${by+34+k*15}" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--ink)">${esc(label)}</text>`);
+    if(right !== '') out.push(`<text x="${bx+bw-7}" y="${by+34+k*15}" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600" fill="${lit ? 'var(--power)' : 'var(--blue)'}">${esc(right)}</text>`);
+  });
+  if(TM[n.op] && R.live && R.runs){ const dn = rd(M, n.args[0]+'.DN'); out.push(`<text x="${bx+bw-7}" y="${by+15}" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9.5" fill="${dn ? 'var(--power)' : 'var(--muted)'}">DN ${dn ? 1 : 0}</text>`); }
+  out.push('</g>');
+}
+function drawSeq(R, nodes, x, y, out){
+  for(const n of nodes){
+    if(n.k==='I'){ (isBitNode(n) ? drawBit : drawBox)(R, n, x, y, out); x += n.w; continue; }
+    const yy = y + TOP; let py = y; const x0 = x + 12, x1 = x + n.w - 12; let last = yy;
+    out.push(`<line x1="${x}" y1="${yy}" x2="${x0}" y2="${yy}" stroke="${col(n.pin)}" stroke-width="2.4"/>`);
+    for(const p of n.paths){
+      const m = measure(p), ex = drawSeq(R, p, x0, py, out), pp = p.length ? p[p.length-1].pout : n.pin;
+      out.push(`<line x1="${ex}" y1="${py+TOP}" x2="${x1}" y2="${py+TOP}" stroke="${col(pp)}" stroke-width="2.4"/>`);
+      last = py + TOP; py += m.h;
+    }
+    out.push(`<line x1="${x0}" y1="${yy}" x2="${x0}" y2="${last}" stroke="${col(n.pin)}" stroke-width="2.4"/><line x1="${x1}" y1="${yy}" x2="${x1}" y2="${last}" stroke="${col(n.pout)}" stroke-width="2.4"/><line x1="${x1}" y1="${yy}" x2="${x+n.w}" y2="${yy}" stroke="${col(n.pout)}" stroke-width="2.4"/>`);
+    x += n.w;
+  }
+  return x;
+}
+function drawRung(R){
+  R.live = mode === 'run' && R.runs;
+  if(!R.live){ const clear = n => { n.pin = false; n.pout = false; if(n.k==='B') n.paths.forEach(p => p.forEach(clear)); }; R.nodes.forEach(clear); }
+  let split = R.nodes.length; while(split > 0){ const n = R.nodes[split-1]; if(n.k==='I' && !isCond(n)) split--; else break; }
+  if(split === R.nodes.length && R.nodes.length && R.nodes[split-1].k === 'B' && R.nodes[split-1].paths.every(p => p.some(n => n.k==='I' && !isCond(n)))) split--;
+  const conds = R.nodes.slice(0, split), outs = R.nodes.slice(split), mc = measure(conds), mo = measure(outs);
+  const W = Math.max(760, mc.w + mo.w + 70), H = Math.max(mc.h, mo.h) + 8, out = [`<svg viewBox="0 0 ${W} ${H}" style="min-width:${Math.min(W, 1400) * .84}px" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(R.head)}: ${esc(R.text)}">`];
+  out.push(`<line x1="14" y1="6" x2="14" y2="${H-6}" stroke="${R.live ? 'var(--power)' : 'var(--wire)'}" stroke-width="4"/><line x1="${W-14}" y1="6" x2="${W-14}" y2="${H-6}" stroke="var(--wire)" stroke-width="4"/>`);
+  const ex = drawSeq(R, conds, 14, 0, out), ox = W - 14 - mo.w, lastP = conds.length ? conds[conds.length-1].pout : R.live;
+  out.push(`<line x1="${ex}" y1="${TOP}" x2="${ox}" y2="${TOP}" stroke="${col(lastP)}" stroke-width="2.4"/>`);
+  const ex2 = drawSeq(R, outs, ox, 0, out);
+  out.push(`<line x1="${ex2}" y1="${TOP}" x2="${W-14}" y2="${TOP}" stroke="${col(outs.length ? outs[outs.length-1].pout : lastP)}" stroke-width="2.4"/></svg>`);
+  return out.join('');
+}
+
+/* ---------------- a chapter ---------------- */
+let CH = null, RUNGS = [], visible = new Set(), io = null, HOOK = null;
+const lessonEl = $('lesson');
+function operands(R){ const s = new Set(); walk(R.nodes, n => { if(!isBitNode(n) && n.op !== 'JSR') n.args.forEach((a, k) => { if(a && !isNum(a) && !(/^(TON|TOF|RTO|CTU|CTD)$/.test(n.op) && k === 0) && !/^(ONS|RES|BSL|BSR|FFL|FFU)$/.test(n.op)) s.add(a); if(/^(TON|TOF|RTO|CTU|CTD)$/.test(n.op) && k === 0){ s.add(a+'.PRE'); } }); }); return [...s]; }
+function rungCard(R, idx){
+  const art = document.createElement('article'); art.className = 'rung'; art.dataset.i = idx;
+  const pats = R.pats.map(p => `<p><b>${p.t}</b> ${p.why}</p>` + (p.think ? `<div class="box think"><p><b>Think of it like this:</b> ${p.think}</p></div>` : '') + (p.watch ? `<div class="box watch"><div class="ttl">Watch for</div><p>${p.watch}</p></div>` : '')).join('');
+  const ops = operands(R);
+  art.innerHTML = `<header><span class="lbl">${esc(R.head)}</span><span class="state"></span><span class="lcb" hidden></span>${R.runs ? '' : `<span class="note">Drawn only: ${esc(R.cant.join(', '))} is not run on this page</span>`}</header>
+    ${R.comment ? `<div class="cmt">${esc(R.comment)}</div>` : ''}
+    <div class="ladder"></div>
+    ${ops.length && R.runs ? `<div class="vals" hidden>${ops.map(a => `<label><span>${esc(a)}</span><input type="number" step="any" data-op="${esc(a)}" id="v-${idx}-${esc(a).replace(/[^\w]/g,'_')}"></label>`).join('')}</div>` : ''}
+    <div class="rt"><code>${esc(R.text)}</code><button class="btn" type="button" data-copy="1">Copy</button><button class="btn lcadd" type="button" data-lcadd="1" hidden title="Put this rung into the lesson’s routine in Logix Connect">Add it in Logix Connect</button></div>
+    ${R.pred ? `<div class="predict"><div class="ttl">Predict it</div><p>${R.pred.q}</p>
+      <div class="opts"><button class="btn" type="button" data-guess="true">The rung is true</button><button class="btn" type="button" data-guess="false">The rung is false</button></div><div class="ans" hidden></div></div>` : ''}
+    <details class="how"><summary>How this rung works</summary><div class="body"><p><b>In words.</b> ${R.words}</p><p class="sub">Left to right</p>${R.ltr}${pats ? '<p class="sub">Why it is built this way</p>' + pats : ''}</div></details>`;
+  return art;
+}
+function showChapter(d){
+  CH = d; TAGS = d.tags || {}; HOOK = null; scans = 0; visible = new Set(); if(io) io.disconnect();
+  for(const k of Object.keys(MEM)) delete MEM[k];
+  const ti = TOC.findIndex(e => e.id === d.id); let part = ''; for(let k = ti; k >= 0; k--) if(TOC[k].part){ part = TOC[k].part; break; }
+  const num = typeof d.n === 'number' ? `<span class="num">${d.n}</span>` : `<span class="num">Appendix ${d.n}</span>`;
+  lessonEl.innerHTML = `<button class="btn menu-btn" id="menuBtn" type="button">☰ Contents</button><div class="crumb">${esc(part.replace(' — ', ' · '))}</div><h1>${num}${esc(d.t)}</h1><div id="lcCard"></div><div id="strip"></div><div class="prose">${d.html}</div><nav class="pager" aria-label="Chapters"></nav>`;
+  RUNGS = d.rungs.map(r => { const nodes = parse(r.text), cant = new Set(); walk(nodes, n => { if(!RUNS.has(n.op)) cant.add(n.op); }); return Object.assign({}, r, {nodes, cant:[...cant], runs: cant.size === 0, state:false, sig:''}); });
+  lessonEl.querySelectorAll('.lr').forEach(ph => { const k = +ph.dataset.r; ph.replaceWith(rungCard(RUNGS[k], k)); });
+  // stop buttons are normally closed in every program here: a tag whose description says so starts at 1
+  for(const [key, T] of Object.entries(TAGS)) for(const [n, t] of Object.entries(T)) if(/\bNC\b|1 until pressed|1 while healthy|1 = healthy|normally closed/i.test(t.desc || '')) mem(key)[n] = 1;
+  if(RUNGS.length){
+    $('strip').innerHTML = `<div class="runbar"><span class="rb-t">Controller</span><div class="key" role="group" aria-label="Controller mode"><button type="button" id="mProg">Prog</button><button type="button" id="mRun" class="on">Run</button></div><span class="scan" id="scan"></span><button class="btn" type="button" id="resetBtn">Reset values</button><span class="rb-h">The rungs on this page are live. Click a contact or coil to flip its bit; click a box to set its numbers.</span></div>`;
+    $('mRun').onclick = () => setMode('run'); $('mProg').onclick = () => setMode('prog');
+    $('resetBtn').onclick = () => { const keep = CH; showChapter(keep); };
+  }
+  if(typeof EXTRAS[d.id] === 'function') EXTRAS[d.id]();
+  io = new IntersectionObserver(es => es.forEach(e => { const k = +e.target.dataset.i; if(e.isIntersecting){ visible.add(k); RUNGS[k].sig = ''; } else visible.delete(k); }), {rootMargin:'200px'});
+  lessonEl.querySelectorAll('article.rung').forEach(a => io.observe(a));
+  // pager
+  const chs = TOC.filter(e => e.id), at = chs.findIndex(e => e.id === d.id), pv = chs[at-1], nx = chs[at+1], lab = e => (typeof e.n === 'number' ? 'Chapter ' + e.n : 'Appendix ' + e.n);
+  lessonEl.querySelector('.pager').innerHTML = (pv ? `<a class="p" href="#${pv.id}">← ${lab(pv)}<b>${esc(pv.t)}</b></a>` : '<span></span>') + (nx ? `<a class="p" style="text-align:right" href="#${nx.id}">${lab(nx)} →<b>${esc(nx.t)}</b></a>` : '');
+  $('menuBtn').onclick = () => { if(wideRail()) setRail(true); else $('rail').classList.toggle('open'); };
+  mode = 'run'; buildToc($('q').value); window.scrollTo(0, 0); frame(true); linkRender(); linkHello('here');
+}
+function setMode(m){ mode = m; if($('mRun')){ $('mRun').classList.toggle('on', m==='run'); $('mProg').classList.toggle('on', m!=='run'); } RUNGS.forEach(r => r.sig = ''); frame(true); }
+function sigOf(R){ let s = mode; walk(R.nodes, n => { s += (n.pin?1:0) + '' + (n.pout?1:0); if(n.k==='I') for(const a of n.args){ if(!isNum(a)) s += '|' + rd(mem(R.key), a); if(/^(TON|TOF|RTO|CTU|CTD)$/.test(n.op)){ s += '|' + rd(mem(R.key), n.args[0]+'.ACC') + rd(mem(R.key), n.args[0]+'.DN'); break; } } }); const mark = n => { if(n.k==='B'){ s += (n.pin?1:0) + '' + (n.pout?1:0); n.paths.forEach(p => p.forEach(mark)); } }; R.nodes.forEach(mark); return s; }
+function frame(force){
+  const now = performance.now(), dt = Math.min(250, now - lastT); lastT = now;
+  if(!CH) return;
+  if(mode === 'run'){ if(HOOK && HOOK.pre) HOOK.pre(); for(const R of RUNGS) if(R.runs) R.state = evalSeq(mem(R.key), R.nodes, true, dt); scans++; if(HOOK && HOOK.post) HOOK.post(); }
+  const cards = lessonEl.querySelectorAll('article.rung');
+  for(const k of visible){
+    const R = RUNGS[k], card = cards[k]; if(!card) continue; const sig = sigOf(R); if(sig === R.sig && !force) continue; R.sig = sig;
+    card.querySelector('.ladder').innerHTML = drawRung(R);
+    const st = card.querySelector('.state'), on = mode === 'run' && R.runs && R.state; st.textContent = !R.runs ? '' : mode === 'run' ? (on ? 'true' : 'false') : 'program mode'; st.classList.toggle('true', !!on); st.hidden = !R.runs;
+  }
+  if($('scan')) $('scan').textContent = mode === 'run' ? 'scan ' + scans : 'program mode';
+  if(HOOK && HOOK.render) HOOK.render();
+}
+setInterval(frame, 50);
+
+/* clicks inside the lesson */
+lessonEl.addEventListener('click', e => {
+  const copy = e.target.closest('[data-copy]');
+  if(copy){ const code = copy.parentElement.querySelector('code'), done = () => { copy.textContent = 'Copied'; setTimeout(() => copy.textContent = 'Copy', 1200); }, sel = () => { const r = document.createRange(); r.selectNodeContents(code); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+    try { navigator.clipboard.writeText(code.textContent).then(done, sel); } catch(err){ sel(); } return; }
+  const add = e.target.closest('[data-lcadd]');
+  if(add){ const R = RUNGS[+add.closest('article.rung').dataset.i]; const L = linkLessonOf(R); if(L) linkPost({type:'add', ch:CH.n, rn:L.rungs.rn, i:R.i, t:lnorm(R.text)}); add.textContent = 'Sent to Logix Connect'; setTimeout(() => linkRender(), 1500); return; }
+  const card = e.target.closest('article.rung'); if(!card) return; const R = RUNGS[+card.dataset.i];
+  const guess = e.target.closest('[data-guess]');
+  if(guess){ const ans = card.querySelector('.ans'), right = (guess.dataset.guess === 'true') === R.pred.truth; ans.hidden = false;
+    ans.innerHTML = `<div class="verdict ${right ? 'right' : 'wrong'}">${right ? 'Right.' : 'Not this time.'}</div><p>${R.pred.a}</p>${R.runs ? '<button class="btn primary" type="button" data-setbits="1">Set these values on the rung</button>' : ''}`; return; }
+  if(e.target.closest('[data-setbits]')){ const M = mem(R.key); for(const [t, v] of Object.entries(R.pred.bits)) M[t] = v ? 1 : 0; for(const [t, v] of Object.entries(R.pred.nums)) M[t] = v; if(HOOK && HOOK.set) HOOK.set(R.pred.bits); setMode('run'); return; }
+  const g = e.target.closest('.el'); if(!g || !R.runs) return;
+  if(g.dataset.box){ const v = card.querySelector('.vals'); if(v){ v.hidden = !v.hidden; if(!v.hidden) v.querySelectorAll('input').forEach(i => i.value = rd(mem(R.key), i.dataset.op)); } return; }
+  const t = g.dataset.tag, M = mem(R.key); if(HOOK && HOOK.toggle && HOOK.toggle(t)){ frame(true); return; } M[t] = rd(M, t) ? 0 : 1; frame(true);
+});
+lessonEl.addEventListener('input', e => { const i = e.target.closest('.vals input'); if(!i) return; const R = RUNGS[+i.closest('article.rung').dataset.i]; const v = parseFloat(i.value); if(!isNaN(v)) mem(R.key)[i.dataset.op] = v; });
+lessonEl.addEventListener('keydown', e => { if((e.key==='Enter'||e.key===' ') && e.target.closest && e.target.closest('.el')){ e.preventDefault(); e.target.closest('.el').dispatchEvent(new MouseEvent('click', {bubbles:true})); } });
+
+/* ---------------- chapter extras: the operator station of the run circuit ---------------- */
+const EXTRAS = {
+  ch18(){
+    const M = mem('bottle'); let startHeld = false, stopHeld = false;
+    const con = document.createElement('div'); con.className = 'console'; con.setAttribute('aria-label', 'Operator console');
+    con.innerHTML = `<div class="plate">Panel_1<b>Bottle line</b></div>
+      <div class="dev"><div class="pb green" id="pbStart" role="button" tabindex="0" aria-label="Start (hold)"><i></i></div><span class="lg">Start</span></div>
+      <div class="dev"><div class="pb red" id="pbStop" role="button" tabindex="0" aria-label="Stop (hold)"><i></i></div><span class="lg">Stop</span></div>
+      <div class="dev"><div class="lamp" id="lampRun" role="img" aria-label="Run lamp"><i></i></div><span class="lg">Run</span></div>
+      <div class="dev"><div class="pb black" id="pbBatch" role="button" tabindex="0" aria-label="Toggle Batch_Done"><i></i></div><span class="lg">Batch done</span></div>
+      <div class="key" role="group" aria-label="Controller mode"><button type="button" id="mProg">Prog</button><button type="button" id="mRun" class="on">Run</button></div><div class="scan" id="scan"></div>`;
+    $('strip').innerHTML = ''; $('strip').appendChild(con);
+    $('mRun').onclick = () => setMode('run'); $('mProg').onclick = () => setMode('prog');
+    const hold = (el, on, off) => { const dn = e => { e.preventDefault(); el.classList.add('down'); on(); }, up = () => { if(el.classList.contains('down')){ el.classList.remove('down'); off(); } };
+      el.addEventListener('pointerdown', dn); ['pointerup','pointerleave','pointercancel'].forEach(t => el.addEventListener(t, up));
+      el.addEventListener('keydown', e => { if((e.key===' '||e.key==='Enter') && !e.repeat){ e.preventDefault(); el.classList.add('down'); on(); } }); el.addEventListener('keyup', e => { if(e.key===' '||e.key==='Enter'){ el.classList.remove('down'); off(); } }); };
+    hold($('pbStart'), () => startHeld = true, () => startHeld = false); hold($('pbStop'), () => stopHeld = true, () => stopHeld = false);
+    const tb = () => { M.Batch_Done = M.Batch_Done ? 0 : 1; }; $('pbBatch').addEventListener('click', tb); $('pbBatch').addEventListener('keydown', e => { if(e.key===' '||e.key==='Enter'){ e.preventDefault(); tb(); } });
+    const runIt = [...lessonEl.querySelectorAll('.box.try')].find(b => /Run it/.test(b.querySelector('.ttl').textContent));
+    if(runIt) runIt.querySelector('p').insertAdjacentHTML('beforeend', ' The operator station at the top of the page is that panel.');
+    HOOK = {
+      pre(){ M.Start = startHeld ? 1 : 0; M.Stop = stopHeld ? 0 : 1; },
+      toggle(t){ if(t === 'Start'){ startHeld = !startHeld; return true; } if(t === 'Stop'){ stopHeld = !stopHeld; return true; } return false; },
+      set(bits){ if('Start' in bits) startHeld = !!bits.Start; if('Stop' in bits) stopHeld = !bits.Stop; },
+      render(){ if(!$('lampRun')) return; $('lampRun').classList.toggle('on', mode === 'run' && !!M.Run); $('pbBatch').classList.toggle('set', !!M.Batch_Done); }
+    };
+  }
+};
+
+
+/* ---------------- the link to Logix Connect ----------------
+   Opened from the app (its Guided panel or menu), this window is its opener's companion: the app sends each lesson's checks, run checks and
+   rungs (written, proven in Run) and this page shows them; it asks the app to go to a lesson or to add a reference rung. On one origin a
+   BroadcastChannel links them even when the guide was opened by hand. The last progress is kept, so the page shows it when the app is away. */
+const LINK = {snap:null, live:false, peer:0, bc:null, note:null, follow:true};
+const lnorm = t => String(t || '').replace(/\s+/g, '').replace(/;?$/, ';');
+try { LINK.follow = localStorage.getItem('lc-guide-follow') !== '0'; } catch(e){}
+try { const c = JSON.parse(localStorage.getItem('lc-guide-progress') || 'null'); if(c && c.type === 'progress') LINK.snap = c; } catch(e){}
+function linkPost(m){ m = Object.assign({lc:'logix-guide', v:1}, m); try { if(window.opener && !window.opener.closed) window.opener.postMessage(m, '*'); } catch(e){} try { if(LINK.bc) LINK.bc.postMessage(m); } catch(e){} }
+function linkHello(type){ linkPost({type: type || 'hello', ch: CH && typeof CH.n === 'number' ? CH.n : 0, t: CH ? CH.t : ''}); }
+function linkIn(d){
+  if(!d || typeof d !== 'object' || d.lc !== 'logix-guide') return;
+  if(d.type === 'alive'){ LINK.peer = Date.now(); if(!LINK.live){ LINK.live = true; linkRender(); } else linkChip(); return; }
+  if(d.type === 'note'){ LINK.note = {ch: +d.ch || 0, text: String(d.text || ''), at: Date.now()}; LINK.peer = Date.now(); LINK.live = true; linkRender(); return; }
+  if(d.type !== 'progress' || (d.on && !Array.isArray(d.lessons))) return;
+  const prev = LINK.snap; LINK.snap = d; LINK.peer = Date.now(); LINK.live = true;
+  try { localStorage.setItem('lc-guide-progress', JSON.stringify(d)); } catch(e){}
+  // follow the app: when its lesson changes, show that lesson's chapter
+  if(LINK.follow && d.on && prev && prev.on && prev.prog === d.prog && prev.cur !== d.cur){ const L = d.lessons[d.cur]; if(L && L.ch && (!CH || CH.n !== L.ch)){ const e = TOC.find(x => x.n === L.ch); if(e) location.hash = '#' + e.id; } }
+  linkRender();
+}
+window.addEventListener('message', e => { if(!window.opener || e.source !== window.opener) return; linkIn(e.data); });
+try { LINK.bc = new BroadcastChannel('logix-guide'); LINK.bc.onmessage = e => { const d = e.data; if(d && d.type !== 'hello' && d.type !== 'here' && d.type !== 'goto' && d.type !== 'add') linkIn(d); }; } catch(e){ LINK.bc = null; }
+setInterval(() => { linkHello('here'); if(LINK.live && Date.now() - LINK.peer > 12000){ LINK.live = false; linkRender(); } }, 4000);
+function linkWhen(t){ try { const d = new Date(t), now = new Date(); const hm = d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}); return d.toDateString() === now.toDateString() ? 'today ' + hm : d.toLocaleDateString([], {month:'short', day:'numeric'}) + ' ' + hm; } catch(e){ return ''; } }
+function linkLessons(n){ const S = LINK.snap; return S && S.on && Array.isArray(S.lessons) ? S.lessons.filter(L => L && L.ch === n) : []; }
+function linkLessonOf(R){ if(!CH) return null; for(const L of linkLessons(CH.n)){ if(!L.rungs || !Array.isArray(L.rungs.list)) continue; const t = lnorm(R.text); if(L.rungs.list.some(x => x.t === t) || (L.rungs.rn === R.rn && L.rungs.list[R.i])) return L; } return null; }
+function linkRungOf(L, R){ const t = lnorm(R.text); return L.rungs.list.find(x => x.t === t) || (L.rungs.rn === R.rn ? L.rungs.list.find(x => x.i === R.i && x.t === t) : null); }
+function linkMark(n){ if(typeof n !== 'number') return ''; const ls = linkLessons(n); if(!ls.length) return ''; const done = ls.every(L => L.done), cur = ls.some(L => L.cur), some = ls.some(L => L.done || (L.rungs && L.rungs.w) || (L.checks || []).some(c => c.pass));
+  return `<span class="lcm${done ? ' done' : cur ? ' cur' : some ? ' some' : ''}" title="${done ? 'Done in Logix Connect' : cur ? 'The lesson Logix Connect is on' : some ? 'Started in Logix Connect' : 'Not started in Logix Connect'}">${done ? '✓' : cur ? '●' : some ? '◐' : '○'}</span>`; }
+function linkChip(){
+  let b = $('lcChip'); if(!b){ b = document.createElement('button'); b.id = 'lcChip'; b.type = 'button'; b.className = 'btn lcchip'; document.body.appendChild(b); b.onclick = () => { try { if(window.opener && !window.opener.closed) window.opener.focus(); } catch(e){} const c = $('lcCard'); if(c && c.firstChild) c.scrollIntoView({block:'start', behavior:'smooth'}); }; }
+  const S = LINK.snap; if(!S && !LINK.live){ b.hidden = true; return; }
+  const what = S ? (S.proj || (S.on ? S.title : '')) : '', les = S && S.on && Array.isArray(S.lessons) && S.lessons.length > 1 ? ` · lesson ${(+S.cur || 0) + 1} of ${S.lessons.length}` : '';
+  b.hidden = false; b.classList.toggle('on', LINK.live);
+  b.innerHTML = `<span class="d">${LINK.live ? '●' : '○'}</span> Logix Connect${what ? ' · ' + esc(what) : ''}${LINK.live ? esc(les) : ' · last seen ' + esc(linkWhen(S ? S.at : 0))}`;
+  b.title = LINK.live ? 'Linked to Logix Connect: ' + (what || 'no project') + (S && S.on ? ', guided mode on' : ', guided mode off') + '. Click to go to the app.' : 'Not linked: this is what Logix Connect showed last. Open the guide from the app’s Guided panel to link them again.';
+}
+function linkRender(){
+  linkChip(); buildToc($('q') ? $('q').value : '');
+  const host = $('lcCard'); if(!host || !CH) return;
+  const S = LINK.snap, ls = linkLessons(CH.n), live = LINK.live, hasR = RUNGS.length > 0;
+  const note = LINK.note && LINK.note.ch === CH.n && Date.now() - LINK.note.at < 20000 ? `<p class="lcnote">${esc(LINK.note.text)}</p>` : '';
+  const state = live ? `<span class="lcs on">● linked</span>` : S ? `<span class="lcs">○ not linked · last seen ${esc(linkWhen(S.at))}</span>` : '';
+  const fol = `<label class="lcf" title="When the app moves to another lesson, show its chapter here"><input type="checkbox" id="lcFollow"${LINK.follow ? ' checked' : ''}> Follow the app</label>`;
+  let body = '';
+  if(!S){ if(!hasR){ host.innerHTML = ''; return; } body = `<p class="lcdim">Open this chapter from Logix Connect (the Guided panel’s <b>Read it in the guide</b>) and your progress on it shows here as you work.</p>`; }
+  else if(!S.on){ if(!hasR && !note){ host.innerHTML = ''; return; } body = `<p class="lcdim">Guided mode is off in Logix Connect${S.proj ? ' (' + esc(S.proj) + ' is open)' : ''}. Start it from the app’s Guided menu to track this chapter.</p>`; }
+  else if(!ls.length){ if(!hasR && !note){ host.innerHTML = ''; return; } body = `<p class="lcdim">Logix Connect has ${esc(S.proj || S.title || 'another project')} open; this chapter is not one of its lessons.</p>`; }
+  else body = ls.map(L => {
+    const ck = (L.checks || []).map(c => `<li class="${c.pass ? 'ok' : ''}"><span class="mk">${c.pass ? '✓' : '○'}</span>${esc(c.label)}${!c.pass && c.fix ? ' <span class="lcfix">fix button in the app</span>' : ''}</li>`).join('');
+    const rn = (L.run || []).map(c => `<li class="${c.pass ? 'ok' : ''}"><span class="mk">${c.pass ? '✓' : '▶'}</span>${esc(c.label)}</li>`).join('');
+    const rg = L.rungs ? `<p class="lcr"><b>${L.rungs.w} / ${L.rungs.n}</b> rungs of <code>${esc(L.rungs.rn)}</code> in your program · <b>${L.rungs.p}</b> proven in Run${L.rungs.next >= 0 ? ` · next: rung ${L.rungs.next}` : ''}</p>` : '';
+    const tag = L.done ? '<span class="lct done">✓ done</span>' : L.cur ? '<span class="lct cur">the app’s lesson now</span>' : '<span class="lct">in progress</span>';
+    const go = live && !L.cur ? `<button class="btn lcgo" type="button" data-lcgo="${L.ch}">Show this lesson in Logix Connect</button>` : '';
+    return `<div class="lcl"><div class="lcl-h"><b>${esc(L.title)}</b>${tag}</div>${ck ? `<div class="sub">Build it</div><ul class="lcc">${ck}</ul>` : ''}${rn ? `<div class="sub">Run it</div><ul class="lcc">${rn}</ul>` : ''}${rg}${go}</div>`; }).join('');
+  host.innerHTML = `<section class="lccard${live ? ' live' : ''}" aria-label="Your progress in Logix Connect"><div class="lchd"><span class="lctt">In Logix Connect</span>${S && S.proj ? `<span class="lcp">${esc(S.proj)}</span>` : ''}${state}${S && S.on ? fol : ''}</div>${note}${body}</section>`;
+  const f = $('lcFollow'); if(f) f.onchange = () => { LINK.follow = f.checked; try { localStorage.setItem('lc-guide-follow', f.checked ? '1' : '0'); } catch(e){} };
+  host.querySelectorAll('[data-lcgo]').forEach(b => b.onclick = () => { linkPost({type:'goto', ch:+b.dataset.lcgo}); b.textContent = 'Sent'; });
+  // the rungs: what the app has seen of each
+  lessonEl.querySelectorAll('article.rung').forEach(a => { const R = RUNGS[+a.dataset.i]; if(!R) return; const b = a.querySelector('.lcb'), add = a.querySelector('.lcadd'); const L = linkLessonOf(R), x = L ? linkRungOf(L, R) : null;
+    if(b){ if(x){ b.hidden = false; b.className = 'lcb ' + (x.p ? 'p' : x.w ? 'w' : x.away ? 'aw' : x.i === L.rungs.next ? 'nx' : ''); b.textContent = x.p ? '✓✓ proven in Run' : x.w ? '✓ in your program' : x.away ? 'written in ' + x.away : x.i === L.rungs.next ? 'next in Logix Connect' : 'not written yet'; } else b.hidden = true; }
+    if(add){ add.hidden = !(live && x && !x.w && !x.away); if(!add.hidden) add.textContent = 'Add it in Logix Connect'; } });
+}
+
+/* ---------------- contents, search, routing ---------------- */
+const tocEl = $('toc'); let SEARCH = null, searching = null;
+function current(){ return (location.hash || '').replace('#', '').split(':')[0] || 'ch01'; }
+/* #ch20:S3_Index:2 opens chapter 20 at that rung (Logix Connect's rung marks link here) */
+function hashRung(){ const p = (location.hash || '').replace('#', '').split(':'); return p.length >= 3 ? {rn:decodeURIComponent(p[1]), i:+p[2]} : null; }
+function showRung(t){ if(!t) return; const k = RUNGS.findIndex(R => R.rn === t.rn && R.i === t.i); if(k < 0) return; const a = lessonEl.querySelectorAll('article.rung')[k]; if(!a) return; a.scrollIntoView({block:'center'}); a.classList.remove('flash'); void a.offsetWidth; a.classList.add('flash'); }
+function buildToc(filter){
+  const f = (filter || '').trim().toLowerCase(), cur = CH ? CH.id : current(); tocEl.innerHTML = ''; let pending = null, shown = 0;
+  for(const e of TOC){
+    if(e.part){ pending = e.part; continue; }
+    const label = (typeof e.n === 'number' ? e.n + ' ' : 'appendix ' + e.n + ' ') + e.t; let snip = '';
+    if(f){ const inTitle = label.toLowerCase().includes(f); if(!inTitle){ if(!SEARCH || f.length < 3) continue; const txt = SEARCH[e.id] || '', at = txt.toLowerCase().indexOf(f); if(at < 0) continue; snip = '…' + txt.slice(Math.max(0, at - 30), at + f.length + 40) + '…'; } }
+    if(pending){ const li = document.createElement('li'); li.className = 'part'; li.textContent = pending.replace(' — ', ' · '); tocEl.appendChild(li); pending = null; }
+    const li = document.createElement('li'); shown++;
+    const lm = linkMark(e.n);
+    li.innerHTML = `<a href="#${e.id}" class="${e.id === cur ? 'on' : ''}"${e.id === cur ? ' aria-current="page"' : ''}><span class="n">${e.n}</span><span>${esc(e.t)}${snip ? `<small>${esc(snip)}</small>` : ''}</span>${lm}</a>`;
+    tocEl.appendChild(li);
+  }
+  if(!shown){ const li = document.createElement('li'); li.className = 'none'; li.textContent = f.length < 3 ? 'Type at least three letters to search the text.' : (SEARCH ? 'Nothing in the guide matches.' : 'Searching…'); tocEl.appendChild(li); }
+}
+function clearMarks(){ lessonEl.querySelectorAll('mark').forEach(m => m.replaceWith(document.createTextNode(m.textContent))); lessonEl.normalize(); }
+function markText(q){
+  if(q.length < 3) return;
+  const w = document.createTreeWalker(lessonEl.querySelector('.prose') || lessonEl, NodeFilter.SHOW_TEXT, {acceptNode: n => n.parentElement.closest('svg,script,button,input') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT});
+  const hits = []; let n; while((n = w.nextNode())){ if(n.nodeValue.toLowerCase().includes(q)) hits.push(n); if(hits.length > 200) break; }
+  hits.forEach(t => { const i = t.nodeValue.toLowerCase().indexOf(q), r = document.createRange(); r.setStart(t, i); r.setEnd(t, i + q.length); const m = document.createElement('mark'); try { r.surroundContents(m); } catch(e){} });
+}
+let qt; $('q').addEventListener('input', e => { clearTimeout(qt); qt = setTimeout(() => { const q = e.target.value.trim().toLowerCase();
+  if(q.length >= 3 && !SEARCH && !searching){ searching = fetch('search.json').then(r => r.json()).then(d => { SEARCH = d; buildToc($('q').value); }).catch(() => { SEARCH = {}; }); }
+  buildToc(q); clearMarks(); markText(q); }, 220); });
+/* the contents rail folds away on a wide screen; on a narrow one it is the drawer it always was */
+function wideRail(){ return window.matchMedia('(min-width:901px)').matches; }
+function setRail(on){ document.body.classList.toggle('railoff', !on); try { localStorage.setItem('lc-guide-rail', on ? '1' : '0'); } catch(e){} }
+try { if(localStorage.getItem('lc-guide-rail') === '0') document.body.classList.add('railoff'); } catch(e){}
+$('railHide').onclick = () => { if(wideRail()) setRail(false); else $('rail').classList.remove('open'); };
+document.addEventListener('click', e => { const rail = $('rail'); if(rail.classList.contains('open') && (!e.target.closest('#rail,#menuBtn') || e.target.closest('#toc a'))) rail.classList.remove('open'); });
+async function route(){
+  const id = current(), e = TOC.find(x => x.id === id) || TOC.find(x => x.id);
+  if(CH && CH.id === e.id){ showRung(hashRung()); return; }
+  lessonEl.classList.add('loading');
+  try { const d = await (await fetch('ch/' + e.id + '.json')).json(); showChapter(d); const q = $('q').value.trim().toLowerCase(); if(q.length >= 3){ markText(q); const first = lessonEl.querySelector('mark'); if(first){ const dt = first.closest('details'); if(dt) dt.open = true; first.scrollIntoView({block:'center'}); } } }
+  catch(err){ lessonEl.innerHTML = `<h1>${esc(e.t)}</h1><p>This chapter could not be loaded. Check the connection and choose it again from the contents.</p>`; }
+  lessonEl.classList.remove('loading'); showRung(hashRung());
+}
+window.addEventListener('hashchange', route);
+$('themeBtn').addEventListener('click', () => { const r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; r.dataset.theme = dark ? 'light' : 'dark'; });
+buildToc(''); route(); linkChip(); linkHello('hello');
+
+</script>
+</body></html>
