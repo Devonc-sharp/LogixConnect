@@ -605,8 +605,13 @@ function linkRestore(){
   const noCh = !(location.hash || '').replace('#', '');
   if((noCh || (sp.appCh && sp.appCh === CH.n)) && TOC.some(x => x.id === sp.id)){ LINK.pendY = sp.y; location.hash = '#' + sp.id; } }
 function linkToast(t){ let el = $('lcToast'); if(!el){ el = document.createElement('div'); el.id = 'lcToast'; el.className = 'lctoast'; document.body.appendChild(el); } el.textContent = t; el.classList.add('on'); clearTimeout(LINK.toastT); LINK.toastT = setTimeout(() => el.classList.remove('on'), 5000); }
+/* Inside the desktop app's own window (an older bridge opened the guide there, in place of the app): Back goes back to the app's page. */
+function linkInApp(){ return !!(window.chrome && window.chrome.webview); }
+function linkFromUrl(){ try { const q = new URLSearchParams(location.search).get('from') || sessionStorage.getItem('lc-guide-from') || ''; const u = new URL(q);
+  if((u.protocol === 'http:' && /^(127\.0\.0\.1|localhost)$/.test(u.hostname)) || (u.protocol === 'https:' && u.hostname === 'devonc-sharp.github.io')){ sessionStorage.setItem('lc-guide-from', u.href); return u.href; } } catch(e){} return ''; }
 function linkBackToApp(){
   const op = linkOpener(); linkSaveSpot();
+  if(!op && linkInApp()){ const f = linkFromUrl(); if(f){ location.href = f; return; } if(history.length > 1){ history.back(); return; } location.href = 'http://127.0.0.1:8787/'; return; }
   try { if(op) op.focus(); } catch(e){}
   const touch = window.matchMedia && matchMedia('(pointer: coarse)').matches;
   if(op && touch){ try { window.close(); } catch(e){} setTimeout(() => { if(!window.closed) linkToast('Your device kept the guide open: use the app switcher to go back to Logix Connect.'); }, 500); return; }
@@ -621,10 +626,11 @@ function linkMark(n){ if(typeof n !== 'number') return ''; const ls = linkLesson
   return `<span class="lcm${done ? ' done' : cur ? ' cur' : some ? ' some' : ''}" title="${done ? 'Done in Logix Connect' : cur ? 'The lesson Logix Connect is on' : some ? 'Started in Logix Connect' : 'Not started in Logix Connect'}">${done ? '✓' : cur ? '●' : some ? '◐' : '○'}</span>`; }
 function linkChip(){
   let b = $('lcChip'); if(!b){ b = document.createElement('button'); b.id = 'lcChip'; b.type = 'button'; b.className = 'btn lcchip'; document.body.appendChild(b); b.onclick = () => linkBackToApp(); }
-  const S = LINK.snap; if(!S && !LINK.live){ b.hidden = true; return; }
+  const S = LINK.snap; if(!S && !LINK.live && !linkInApp()){ b.hidden = true; return; }
+  if(!S && !LINK.live){ b.hidden = false; b.classList.remove('on'); b.innerHTML = '<span class="bk">←</span> Back to Logix Connect'; b.title = 'Back to the Logix Connect page in this window'; return; }
   const what = S ? (S.proj || (S.on ? S.title : '')) : '', les = S && S.on && Array.isArray(S.lessons) && S.lessons.length > 1 ? ` · lesson ${(+S.cur || 0) + 1} of ${S.lessons.length}` : '';
   b.hidden = false; b.classList.toggle('on', LINK.live);
-  b.innerHTML = `${LINK.live || linkOpener() ? '<span class="bk">←</span> ' : ''}<span class="d">${LINK.live ? '●' : '○'}</span> Logix Connect${what ? ' · ' + esc(what) : ''}${LINK.live ? esc(les) : ' · last seen ' + esc(linkWhen(S ? S.at : 0))}`;
+  b.innerHTML = `${LINK.live || linkOpener() || linkInApp() ? '<span class="bk">←</span> ' : ''}<span class="d">${LINK.live ? '●' : '○'}</span> Logix Connect${what ? ' · ' + esc(what) : ''}${LINK.live ? esc(les) : ' · last seen ' + esc(linkWhen(S ? S.at : 0))}`;
   b.title = LINK.live ? 'Back to Logix Connect (' + (what || 'no project') + (S && S.on ? ', guided mode on' : ', guided mode off') + ')' : 'Not linked: this is what Logix Connect showed last. Open the guide from the app’s Guided panel to link them again.';
 }
 function linkRender(){
@@ -645,7 +651,7 @@ function linkRender(){
     const tag = L.done ? '<span class="lct done">✓ done</span>' : L.cur ? '<span class="lct cur">the app’s lesson now</span>' : '<span class="lct">in progress</span>';
     const go = live && !L.cur ? `<button class="btn lcgo" type="button" data-lcgo="${L.ch}">Show this lesson in Logix Connect</button>` : '';
     return `<div class="lcl"><div class="lcl-h"><b>${esc(L.title)}</b>${tag}</div>${ck ? `<div class="sub">Build it</div><ul class="lcc">${ck}</ul>` : ''}${rn ? `<div class="sub">Run it</div><ul class="lcc">${rn}</ul>` : ''}${rg}${go}</div>`; }).join('');
-  host.innerHTML = `<section class="lccard${live ? ' live' : ''}" aria-label="Your progress in Logix Connect"><div class="lchd"><span class="lctt">In Logix Connect</span>${S && S.proj ? `<span class="lcp">${esc(S.proj)}</span>` : ''}${state}${S && S.on ? fol : ''}</div>${live || linkOpener() ? '<button class="btn lcback" type="button" data-lcback="1">← Back to Logix Connect</button>' : ''}${note}${body}</section>`;
+  host.innerHTML = `<section class="lccard${live ? ' live' : ''}" aria-label="Your progress in Logix Connect"><div class="lchd"><span class="lctt">In Logix Connect</span>${S && S.proj ? `<span class="lcp">${esc(S.proj)}</span>` : ''}${state}${S && S.on ? fol : ''}</div>${live || linkOpener() || linkInApp() ? '<button class="btn lcback" type="button" data-lcback="1">← Back to Logix Connect</button>' : ''}${note}${body}</section>`;
   const f = $('lcFollow'); if(f) f.onchange = () => { LINK.follow = f.checked; try { localStorage.setItem('lc-guide-follow', f.checked ? '1' : '0'); } catch(e){} };
   host.querySelectorAll('[data-lcgo]').forEach(b => b.onclick = () => { linkPost({type:'goto', ch:+b.dataset.lcgo}); b.textContent = 'Sent'; });
   host.querySelectorAll('[data-lcback]').forEach(b => b.onclick = () => linkBackToApp());
