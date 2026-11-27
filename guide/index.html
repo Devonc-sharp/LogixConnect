@@ -582,7 +582,7 @@ setInterval(() => { linkHello('here'); if(LINK.live && Date.now() - LINK.peer > 
 /* Opened by the desktop app, the guide is in the browser and the app in its own window: they meet on the Logix Connect bridge
    (ws://127.0.0.1:<port>/link), which passes each message on. The app opens the guide with ?link=bridge&port=N; the tab keeps it. */
 function linkHubStart(){ let port = 0; try { const q = new URLSearchParams(location.search); if(q.get('link') === 'bridge'){ port = +q.get('port') || 8787; sessionStorage.setItem('lc-guide-bridge', String(port)); } else port = +(sessionStorage.getItem('lc-guide-bridge') || 0); } catch(e){}
-  if(!port) return; LINK.port = port; linkHub(); }
+  if(!port) return; LINK.port = port; try { localStorage.setItem('lc-guide-port', String(port)); } catch(e){} linkHub(); }
 function linkHub(){ if(LINK.ws && LINK.ws.readyState < 2) return; let ws; try { ws = new WebSocket('ws://127.0.0.1:' + LINK.port + '/link'); } catch(e){ return; } LINK.ws = ws;
   ws.onopen = () => linkHello('hello');
   ws.onmessage = e => { let d; try { d = JSON.parse(e.data); } catch(err){ return; } if(!d || typeof d !== 'object' || d.lc !== 'logix-guide') return;
@@ -611,7 +611,7 @@ function linkFromUrl(){ try { const q = new URLSearchParams(location.search).get
   if((u.protocol === 'http:' && /^(127\.0\.0\.1|localhost)$/.test(u.hostname)) || (u.protocol === 'https:' && u.hostname === 'devonc-sharp.github.io')){ sessionStorage.setItem('lc-guide-from', u.href); return u.href; } } catch(e){} return ''; }
 function linkBackToApp(){
   const op = linkOpener(); linkSaveSpot();
-  if(!op && linkInApp()){ const f = linkFromUrl(); if(f){ location.href = f; return; } if(history.length > 1){ history.back(); return; } location.href = 'http://127.0.0.1:8787/'; return; }
+  if(!op && linkInApp()){ const f = linkFromUrl(); if(f){ location.href = f; return; } if(history.length > 1){ history.back(); return; } let pt = 8787; try { pt = +(new URLSearchParams(location.search).get('port') || sessionStorage.getItem('lc-guide-bridge') || localStorage.getItem('lc-guide-port') || 8787); } catch(e){} location.href = 'http://127.0.0.1:' + pt + '/'; return; }
   try { if(op) op.focus(); } catch(e){}
   const touch = window.matchMedia && matchMedia('(pointer: coarse)').matches;
   if(op && touch){ try { window.close(); } catch(e){} setTimeout(() => { if(!window.closed) linkToast('Your device kept the guide open: use the app switcher to go back to Logix Connect.'); }, 500); return; }
