@@ -237,6 +237,10 @@ ul.lcc li.ok{color:var(--muted)}ul.lcc li.ok .mk{color:var(--power)}
 .rung.flash{animation:lcflash 1.6s ease-out}
 @keyframes lcflash{0%{box-shadow:0 0 0 4px var(--blue)}100%{box-shadow:0 0 0 0 transparent}}
 .toc a{grid-template-columns:28px 1fr auto}
+.lcchip .bk{color:var(--power);font-weight:700}
+.lccard .lcback{margin:2px 0 8px;border-color:var(--power);color:var(--power)}
+.lctoast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:min(520px,calc(100vw - 32px));background:var(--ink);color:var(--sheet);padding:10px 16px;border-radius:4px;font-size:15px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
+.lctoast.on{opacity:1}
 .toc a .lcm{padding-left:6px;font-size:12px;color:var(--muted);flex:none}
 .toc a .lcm.done{color:var(--power)}.toc a .lcm.cur{color:var(--blue)}.toc a .lcm.some{color:var(--amber)}
 </style>
@@ -483,7 +487,7 @@ function showChapter(d){
   const chs = TOC.filter(e => e.id), at = chs.findIndex(e => e.id === d.id), pv = chs[at-1], nx = chs[at+1], lab = e => (typeof e.n === 'number' ? 'Chapter ' + e.n : 'Appendix ' + e.n);
   lessonEl.querySelector('.pager').innerHTML = (pv ? `<a class="p" href="#${pv.id}">← ${lab(pv)}<b>${esc(pv.t)}</b></a>` : '<span></span>') + (nx ? `<a class="p" style="text-align:right" href="#${nx.id}">${lab(nx)} →<b>${esc(nx.t)}</b></a>` : '');
   $('menuBtn').onclick = () => { if(wideRail()) setRail(true); else $('rail').classList.toggle('open'); };
-  mode = 'run'; buildToc($('q').value); window.scrollTo(0, 0); frame(true); linkRender(); linkHello('here');
+  mode = 'run'; buildToc($('q').value); window.scrollTo(0, 0); frame(true); linkRender(); linkHello('here'); linkRestore();
 }
 function setMode(m){ mode = m; if($('mRun')){ $('mRun').classList.toggle('on', m==='run'); $('mProg').classList.toggle('on', m!=='run'); } RUNGS.forEach(r => r.sig = ''); frame(true); }
 function sigOf(R){ let s = mode; walk(R.nodes, n => { s += (n.pin?1:0) + '' + (n.pout?1:0); if(n.k==='I') for(const a of n.args){ if(!isNum(a)) s += '|' + rd(mem(R.key), a); if(/^(TON|TOF|RTO|CTU|CTD)$/.test(n.op)){ s += '|' + rd(mem(R.key), n.args[0]+'.ACC') + rd(mem(R.key), n.args[0]+'.DN'); break; } } }); const mark = n => { if(n.k==='B'){ s += (n.pin?1:0) + '' + (n.pout?1:0); n.paths.forEach(p => p.forEach(mark)); } }; R.nodes.forEach(mark); return s; }
@@ -585,6 +589,30 @@ function linkHub(){ if(LINK.ws && LINK.ws.readyState < 2) return; let ws; try { 
     if(d.type === 'show'){ LINK.peer = Date.now(); LINK.live = true; const en = TOC.find(x => x.n === +d.ch); if(en){ const h = '#' + en.id + (d.rn ? ':' + d.rn + ':' + (+d.i) : ''); if(location.hash === h) showRung(hashRung()); else location.hash = h; } return; }
     if(d.type === 'hub' || d.type === 'hello' || d.type === 'here' || d.type === 'goto' || d.type === 'add') return; linkIn(d); };
   ws.onclose = () => { if(LINK.ws === ws) LINK.ws = null; setTimeout(linkHub, 5000); }; ws.onerror = () => {}; }
+/* Back to the app. On a phone or iPad the guide opened from the app has no tab to switch to, so this closes the guide's window and
+   the app is underneath; the place in the chapter is kept and the guide reopens there. On a computer it brings the app's window forward. */
+function linkOpener(){ try { return window.opener && !window.opener.closed ? window.opener : null; } catch(e){ return null; } }
+function linkSaveSpot(){ try { if(!CH) return; const S = LINK.snap, L = S && S.on && Array.isArray(S.lessons) ? S.lessons[+S.cur || 0] : null; localStorage.setItem('lc-guide-spot', JSON.stringify({id:CH.id, y:Math.round(window.scrollY), appCh:L && L.ch || 0, at:Date.now()})); } catch(e){} }
+window.addEventListener('pagehide', linkSaveSpot); document.addEventListener('visibilitychange', () => { if(document.hidden) linkSaveSpot(); });
+/* Reopened from the app at the same lesson (or with no chapter), the guide goes back to the chapter and place it was left at; a rung
+   mark's address, or the app on another lesson, goes where it says. */
+function linkRestore(){
+  if(LINK.pendY != null){ const y = LINK.pendY; LINK.pendY = null; setTimeout(() => window.scrollTo(0, y), 60); return; }
+  if(LINK.restored) return; LINK.restored = true; if(hashRung() || !CH) return;
+  let sp = null; try { sp = JSON.parse(localStorage.getItem('lc-guide-spot') || 'null'); } catch(e){}
+  if(!sp || Date.now() - sp.at > 12 * 3600e3) return;
+  if(sp.id === CH.id){ if(sp.y > 0) setTimeout(() => window.scrollTo(0, sp.y), 60); return; }
+  const noCh = !(location.hash || '').replace('#', '');
+  if((noCh || (sp.appCh && sp.appCh === CH.n)) && TOC.some(x => x.id === sp.id)){ LINK.pendY = sp.y; location.hash = '#' + sp.id; } }
+function linkToast(t){ let el = $('lcToast'); if(!el){ el = document.createElement('div'); el.id = 'lcToast'; el.className = 'lctoast'; document.body.appendChild(el); } el.textContent = t; el.classList.add('on'); clearTimeout(LINK.toastT); LINK.toastT = setTimeout(() => el.classList.remove('on'), 5000); }
+function linkBackToApp(){
+  const op = linkOpener(); linkSaveSpot();
+  try { if(op) op.focus(); } catch(e){}
+  const touch = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+  if(op && touch){ try { window.close(); } catch(e){} setTimeout(() => { if(!window.closed) linkToast('Your device kept the guide open: use the app switcher to go back to Logix Connect.'); }, 500); return; }
+  if(op){ setTimeout(() => { if(document.hasFocus()) linkToast('Switch to the Logix Connect window or tab: the browser kept this one in front.'); }, 400); return; }
+  linkToast(LINK.live ? 'Logix Connect is open in another window or tab: switch to it there.' : 'Open Logix Connect and use Read it in the guide to link them.');
+}
 function linkWhen(t){ try { const d = new Date(t), now = new Date(); const hm = d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}); return d.toDateString() === now.toDateString() ? 'today ' + hm : d.toLocaleDateString([], {month:'short', day:'numeric'}) + ' ' + hm; } catch(e){ return ''; } }
 function linkLessons(n){ const S = LINK.snap; return S && S.on && Array.isArray(S.lessons) ? S.lessons.filter(L => L && L.ch === n) : []; }
 function linkLessonOf(R){ if(!CH) return null; for(const L of linkLessons(CH.n)){ if(!L.rungs || !Array.isArray(L.rungs.list)) continue; const t = lnorm(R.text); if(L.rungs.list.some(x => x.t === t) || (L.rungs.rn === R.rn && L.rungs.list[R.i])) return L; } return null; }
@@ -592,12 +620,12 @@ function linkRungOf(L, R){ const t = lnorm(R.text); return L.rungs.list.find(x =
 function linkMark(n){ if(typeof n !== 'number') return ''; const ls = linkLessons(n); if(!ls.length) return ''; const done = ls.every(L => L.done), cur = ls.some(L => L.cur), some = ls.some(L => L.done || (L.rungs && L.rungs.w) || (L.checks || []).some(c => c.pass));
   return `<span class="lcm${done ? ' done' : cur ? ' cur' : some ? ' some' : ''}" title="${done ? 'Done in Logix Connect' : cur ? 'The lesson Logix Connect is on' : some ? 'Started in Logix Connect' : 'Not started in Logix Connect'}">${done ? '✓' : cur ? '●' : some ? '◐' : '○'}</span>`; }
 function linkChip(){
-  let b = $('lcChip'); if(!b){ b = document.createElement('button'); b.id = 'lcChip'; b.type = 'button'; b.className = 'btn lcchip'; document.body.appendChild(b); b.onclick = () => { try { if(window.opener && !window.opener.closed) window.opener.focus(); } catch(e){} const c = $('lcCard'); if(c && c.firstChild) c.scrollIntoView({block:'start', behavior:'smooth'}); }; }
+  let b = $('lcChip'); if(!b){ b = document.createElement('button'); b.id = 'lcChip'; b.type = 'button'; b.className = 'btn lcchip'; document.body.appendChild(b); b.onclick = () => linkBackToApp(); }
   const S = LINK.snap; if(!S && !LINK.live){ b.hidden = true; return; }
   const what = S ? (S.proj || (S.on ? S.title : '')) : '', les = S && S.on && Array.isArray(S.lessons) && S.lessons.length > 1 ? ` · lesson ${(+S.cur || 0) + 1} of ${S.lessons.length}` : '';
   b.hidden = false; b.classList.toggle('on', LINK.live);
-  b.innerHTML = `<span class="d">${LINK.live ? '●' : '○'}</span> Logix Connect${what ? ' · ' + esc(what) : ''}${LINK.live ? esc(les) : ' · last seen ' + esc(linkWhen(S ? S.at : 0))}`;
-  b.title = LINK.live ? 'Linked to Logix Connect: ' + (what || 'no project') + (S && S.on ? ', guided mode on' : ', guided mode off') + '. Click to go to the app.' : 'Not linked: this is what Logix Connect showed last. Open the guide from the app’s Guided panel to link them again.';
+  b.innerHTML = `${LINK.live || linkOpener() ? '<span class="bk">←</span> ' : ''}<span class="d">${LINK.live ? '●' : '○'}</span> Logix Connect${what ? ' · ' + esc(what) : ''}${LINK.live ? esc(les) : ' · last seen ' + esc(linkWhen(S ? S.at : 0))}`;
+  b.title = LINK.live ? 'Back to Logix Connect (' + (what || 'no project') + (S && S.on ? ', guided mode on' : ', guided mode off') + ')' : 'Not linked: this is what Logix Connect showed last. Open the guide from the app’s Guided panel to link them again.';
 }
 function linkRender(){
   linkChip(); buildToc($('q') ? $('q').value : '');
@@ -617,9 +645,10 @@ function linkRender(){
     const tag = L.done ? '<span class="lct done">✓ done</span>' : L.cur ? '<span class="lct cur">the app’s lesson now</span>' : '<span class="lct">in progress</span>';
     const go = live && !L.cur ? `<button class="btn lcgo" type="button" data-lcgo="${L.ch}">Show this lesson in Logix Connect</button>` : '';
     return `<div class="lcl"><div class="lcl-h"><b>${esc(L.title)}</b>${tag}</div>${ck ? `<div class="sub">Build it</div><ul class="lcc">${ck}</ul>` : ''}${rn ? `<div class="sub">Run it</div><ul class="lcc">${rn}</ul>` : ''}${rg}${go}</div>`; }).join('');
-  host.innerHTML = `<section class="lccard${live ? ' live' : ''}" aria-label="Your progress in Logix Connect"><div class="lchd"><span class="lctt">In Logix Connect</span>${S && S.proj ? `<span class="lcp">${esc(S.proj)}</span>` : ''}${state}${S && S.on ? fol : ''}</div>${note}${body}</section>`;
+  host.innerHTML = `<section class="lccard${live ? ' live' : ''}" aria-label="Your progress in Logix Connect"><div class="lchd"><span class="lctt">In Logix Connect</span>${S && S.proj ? `<span class="lcp">${esc(S.proj)}</span>` : ''}${state}${S && S.on ? fol : ''}</div>${live || linkOpener() ? '<button class="btn lcback" type="button" data-lcback="1">← Back to Logix Connect</button>' : ''}${note}${body}</section>`;
   const f = $('lcFollow'); if(f) f.onchange = () => { LINK.follow = f.checked; try { localStorage.setItem('lc-guide-follow', f.checked ? '1' : '0'); } catch(e){} };
   host.querySelectorAll('[data-lcgo]').forEach(b => b.onclick = () => { linkPost({type:'goto', ch:+b.dataset.lcgo}); b.textContent = 'Sent'; });
+  host.querySelectorAll('[data-lcback]').forEach(b => b.onclick = () => linkBackToApp());
   // the rungs: what the app has seen of each
   lessonEl.querySelectorAll('article.rung').forEach(a => { const R = RUNGS[+a.dataset.i]; if(!R) return; const b = a.querySelector('.lcb'), add = a.querySelector('.lcadd'); const L = linkLessonOf(R), x = L ? linkRungOf(L, R) : null;
     if(b){ if(x){ b.hidden = false; b.className = 'lcb ' + (x.p ? 'p' : x.w ? 'w' : x.away ? 'aw' : x.i === L.rungs.next ? 'nx' : ''); b.textContent = x.p ? '✓✓ proven in Run' : x.w ? '✓ in your program' : x.away ? 'written in ' + x.away : x.i === L.rungs.next ? 'next in Logix Connect' : 'not written yet'; } else b.hidden = true; }
